@@ -31,3 +31,26 @@ head(d[d$Treatment == "chilled" & d$uptake > 15, -4], 10)
 d = airquality
 d[d$Ozone > 100, c("Ozone", "Temp", "Month", "Day")]
 
+
+
+# 30.10.2018 - vaje iz vaj
+x = c(11, 30, 2)
+
+# get second element
+x[2]
+
+# exclude the second element, return the rest
+x[-2]
+
+# get element "bob" (NA)
+x["bob"]
+
+# subset first and third element (same as x[-2])
+x[c(TRUE, FALSE, TRUE)]
+
+# set all values to something (11, 30, 2) -> (0, 0, 0)
+x[] = 0
+
+# set all elements but the second one to 0
+x[-2] = 0
+
