@@ -19,6 +19,6 @@ FROM SkewCTE;
 EXEC sp_execute_external_script
 @language = N'R',
 @script = N'library(moments)
-			OutputDataSet<- as.data.frame(skewness(InputDataSet))',
+			OutputDataSet <- as.data.frame(skewness(InputDataSet))',
 
 @input_data_1 = N'SELECT Age FROM dbo.vTargetMail'
