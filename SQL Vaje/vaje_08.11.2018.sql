@@ -1,4 +1,4 @@
-﻿
+﻿/*
 SELECT *
 FROM [INFORMATION_SCHEMA].[TABLES];
 go
@@ -38,7 +38,7 @@ SELECT
   SERVERPROPERTY('ProductVersion') AS ProductVersion,  
   SERVERPROPERTY('ProductLevel') AS ProductLevel;  
 GO
-
+*/
 
 /*
 	sortiramo z orderby stolpec OrderQty, in jih označimo s številko vrstice
