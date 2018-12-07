@@ -1,0 +1,49 @@
+---
+title: "Title"
+output: 
+  html_document:
+    toc: yes      # kazalo
+    toc_depth: 2  # globina podnaslovov
+---
+
+```{r setup, include=TRUE, message=FALSE, error=TRUE}
+knitr::opts_chunk$set(echo=TRUE)
+library(dplyr)
+```
+
+# Title
+## Subtitle
+
+```{r, error=TRUE}
+# povprecje tez vozil z osmimi cilindri
+weight = mtcars %>%
+  select(cyl, wt) %>%
+  filter(cyl==8) %>%
+  group_by(cyl) %>%
+  summarise("avg"=mean(wt))
+
+# ali
+# mean(mtcars[mtcars$cyl==8, "wt"])
+```
+
+**Average is `r weight$avg`**
+
+```{r, include=FALSE}
+#Include skrije kodo in output
+data.frame(cars)
+```
+
+```{r, message=FALSE}
+# skrije output konzole
+data.frame(cars)
+```
+
+
+```{r, error=TRUE}
+# gre skozi, vendar izpise error
+asdsa
+```
+
+[HyperLink](https://www.google.com)
+![image](https://www.heart.org/-/media/images/health-topics/congenital-heart-defects/50_1683_44a_asd.jpg?h=551&w=572&la=en&hash=60A4E57B316F13921A743143171BD2EFC7912F93)
+
