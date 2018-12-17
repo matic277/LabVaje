@@ -19,7 +19,6 @@ apply(airquality, 2, function(x){ mean(x, na.rm=TRUE) })
 
 
 # lappy
-
 l = list(a=1:10, b=1:100)
 l
 
@@ -31,7 +30,6 @@ lapply(l, sum)
 
 
 # sapply
-
 newl = sapply(l, mean)
 class(newl)
 
