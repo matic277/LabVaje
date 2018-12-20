@@ -32,7 +32,6 @@ d = airquality
 d[d$Ozone > 100, c("Ozone", "Temp", "Month", "Day")]
 
 
-
 # 30.10.2018 - vaje iz vaj
 x = c(11, 30, 2)
 
