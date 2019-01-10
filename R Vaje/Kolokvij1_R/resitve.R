@@ -57,7 +57,7 @@ library("ggplot2")
 d2 = data %>% select(Primary) %>% group_by(Primary) %>% summarise(Count=n())
 d2
 
-ggplot(d2, aes(x=Count, y=Primary, fill=Count)) + geom_bar(stat="identity")
+ggplot(d2, aes(x=Primary, y=Count, fill=Count)) + geom_bar(stat="identity") + coord_flip()
 
 # labele so ze oznacene
 
@@ -69,7 +69,7 @@ max
 
 
 f = data.frame(
-  x = c(1,2,3,4,5),
+  x = c("ena", "dva", "tri", "stiri", "pet"),
   y = c(10,11,12,13,15)
 )
 f
