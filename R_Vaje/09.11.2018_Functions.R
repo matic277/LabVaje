@@ -1,0 +1,53 @@
+# Exercise 1
+# For the first exercise, write a repeat{} loop that prints all the even numbers from 2 - 10, via incrementing the variable, "i <- 0".
+i = 0;
+repeat {
+  if (i %% 2 == 0) print(i)
+  i = i + 2
+  if (i == 10) break
+}
+
+# Exercise 2
+# Using the following variables
+# msg <- c("Hello")
+# i <- 1
+# Write a repeat{} loop that breaks off the incrementation of, "i", after 5 loops,
+# and prints "msg" at every increment.
+msg = c("Hello")
+i = 1
+
+repeat {
+  print(msg)
+  i = i + 1
+  if (i > 5) break
+}
+
+# Exercise 3
+# With, i <- 1, write a while() loop that prints the odd numbers from 1 through 7
+i = 1
+while (i < 8) {
+  if (i %% 2 == 1) print(i)
+  i = i + 1
+}
+
+# Exercise 4
+# Using the following variables:
+# msg <- c("Hello")
+# Write a while() loop that increments the variable, "i", 6 times, and prints "msg" at every iteration.
+
+
+# Exercise 5
+# For this exercise, write a for() loop that prints the first four numbers of this sequence: x <- c(7, 4, 3, 8, 9, 25).
+x = c(7, 4, 3, 8, 9, 25)
+for (i in 1:4) {
+  print(x[i])
+}
+
+# Exercise 6
+# For the next exercise, write a for() loop that prints all the letters in y <- c("q", "w", "e", "r", "z", "c").
+
+# Exercise 7
+# Write a nested loop, where the outer for() loop increments "a" 3 times, and the inner for() loop increments "b" 3 times. The break statement exits the inner for() loop after 2 incrementations. The nested loop prints the values of variables, "a" and "b".
+
+# Exercise 8
+# Finally, write a for() loop that uses next to print all values except "3" in the following variable: i <- 1:5

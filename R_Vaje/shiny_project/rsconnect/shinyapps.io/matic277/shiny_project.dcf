@@ -1,0 +1,12 @@
+name: shiny_project
+title: shiny_project
+username:
+account: matic277
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 637131
+bundleId: 1808552
+url: https://matic277.shinyapps.io/shiny_project/
+when: 1547201144.28229
+asMultiple: FALSE
+asStatic: FALSE
