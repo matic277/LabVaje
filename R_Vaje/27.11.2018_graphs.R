@@ -83,10 +83,12 @@ qplot(factor(cyl), data=mtcars, geom="bar", color=factor(cyl))
 qplot(factor(cyl), data=mtcars, geom="bar", fill=factor(gear))
 
 # different display of bars (stacked, dodged, identity)
-qplot(clarity, data=diamonds, geom="bar", fill=cut, position="stack")
+qplot(clarity, data=diamonds, geom="bar", fill=cut)
 qplot(clarity, data=diamonds, geom="bar", fill=cut, position="dodge")
 qplot(clarity, data=diamonds, geom="bar", fill=cut, position="fill")
 qplot(clarity, data=diamonds, geom="bar", fill=cut, position="identity")
+
+diamonds
 
 # ggplot histogram
 qplot(carat, data=diamonds, geom="histogram")

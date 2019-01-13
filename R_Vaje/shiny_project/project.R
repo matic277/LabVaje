@@ -7,16 +7,26 @@ library("ggplot2")
 
 library("stringi")
 library("stringr")
+library("lazyeval")
 
 
-sourceDir = "C:/git/LabVaje/R_Vaje/data_resources/"
-fileName1 = "googleplaystore.csv"
-fileName2 = "googleplaystore_user_reviews.csv"
+sourceDir = "C:/git/LabVaje/R_Vaje/shiny_project/data_resources/"
 
-filePath1 = paste(sourceDir, fileName1, sep="");
-filePath2 = paste(sourceDir, fileName2, sep="");
+RawDataPath = paste(sourceDir, "googleplaystore.csv", sep="")
+RawReviewsPath = paste(sourceDir, "googleplaystore_user_reviews.csv", sep="")
 
-data = rio::import(file=filePath1, format="csv")
+ProcessedDataPath = paste(sourceDir, "processedData.csv", sep="")
+ProcessedReviewsPath = paste(sourceDir, "processedReviews.csv", sep="")
+
+# raw data apps
+rdata = rio::import(file=RawDataPath, format="csv")
+# processed data apps
+data = rio::import(file=ProcessedDataPath, format="csv")
+
+# raw reviews
+rrvs = rio::import(file=RawReviewsPath, format="csv")
+# processed reviews
+rvs = rio::import(file=ProcessedReviewsPath, format="csv")
 
 colnames(data)
 
@@ -103,7 +113,7 @@ single = data %>% filter(!grepl(";", Genres))
 
 combined = rbind(single, genre1, genre2)
 
-
+as.data.frame(data)
 # tibble::as.tibble(single)
 # tibble::as.tibble(genre1)
 # tibble::as.tibble(genre2)
@@ -133,6 +143,7 @@ separateName <- function(s) {
 
 data = data %>% rowwise() %>% mutate("App2"=separateName(App))
 
+
 # add a new column, NameLenRange
 # NameLenRange will have values 2,4,6,8,...
 # if an App2 string length is 3, it falls into category 2 for NameLenRange
@@ -142,9 +153,9 @@ nameRange <- function(s) {
   ifelse (l%%2==0, l, l-1)
 }
 
-data = data %>% rowwise() %>% mutate("NameRangeLen"=nameRange(App2))
+data = data %>% rowwise() %>% mutate("NameRangeLen"=nchar(App2))
 
-r = data %>% select(NameRangeLen, eInstalls) %>% group_by(NameRangeLen) %>% summarise("sum"=sum(eInstalls)) %>% arrange(desc(sum))
+r = data %>% select(NameRangeLen, eInstalls) %>% group_by(eInstalls) %>% summarise("sum"=mean(NameRangeLen)) %>% arrange(desc(eInstalls))
 r
 
 
@@ -158,9 +169,17 @@ data = data %>% mutate("Sales"=(ePrice * eInstalls))
 # rating and reviews
 data %>% select(Rating, Reviews) %>% group_by(Rating) %>% summarise(sum(Reviews)) %>% arrange(desc(Rating))
 
+data %>% select(Rating) %>% rowwise() %>% mutate("len"=nchar(as.character(Rating))) %>% arrange(desc(len)) 
+
+r = data %>% rowwise() %>% mutate("RatingGroup"=round(Rating))
+r %>% select(RatingGroup) %>% filter(is.na(RatingGroup))
+
+r %>% select(RatingGroup, Reviews) %>% group_by(RatingGroup) %>% na.omit() %>% summarise(sum(as.numeric(Reviews))) %>% arrange(desc(RatingGroup))
+
+
 # IDEA
 # category and reviews
-data %>% select(Category, Reviews) %>% group_by(Category) %>% summarise("sum"=sum(Reviews)) %>% arrange(desc(sum)) %>% View()
+data %>% select(Category, Reviews) %>% group_by(Category) %>% summarise("sum"=sum(Reviews)) %>% arrange(desc(sum))
 
 # IDEA
 # get n app names that have the most installs
@@ -199,10 +218,166 @@ data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
 # see which apps made most money
 data %>% select(App, App2, Sales) %>% arrange(desc(Sales))
 
+data %>% select(App, App2, Sales) %>% rowwise() %>% mutate("SalesOut"=formatC(Sales, format="f", big.mark=",", digits=1)) %>% arrange(desc(Sales))
+
+formatC(1000.64, format="f", big.mark=",", digits=1)
+
 
 # IDEA
 # see which category made most money
-data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(Sales)) %>% arrange(desc(sum))
+data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(Sales), "count"=n()) %>% arrange(desc(sum))
+
+
+# IDEA
+# most frequent words in apps
+occurences(data$App2) %>% top_n(20)
+
+
+
+
+############### REVIEWS #############
+#####################################
+# using reviews
+rvs = rio::import(file="C:/git/LabVaje/R_Vaje/shiny_project/data_resources/googleplaystore_user_reviews.csv", format="csv")
+as_tibble(rvs)
+
+nrow(rvs)
+
+rvs = rvs %>% filter(!(Sentiment=="nan" | Translated_Review=="nan"))
+
+nrow(rvs)
+
+# processed user reviews
+rvs = rio::import(file=ProcessedReviewsPath, format="csv")
+
+
+# IDEA
+# most frequest words in positive and negative reviews
+neg = rvs %>% filter(Sentiment=="Negative") %>% select(Sentiment, Translated_Review, App)
+neu = rvs %>% filter(Sentiment=="Neutral") %>% select(Sentiment, Translated_Review, App)
+pos = rvs %>% filter(Sentiment=="Positive") %>% select(Sentiment, Translated_Review, App)
+
+occurences <- function(d) {
+  allWords = c("")
+  for (e in d) {
+    split = str_split(e, " ")[[1]]
+    allWords = combine(allWords, split)
+  }
+  # get a pair of word - num_of_occurrences and put it in a dataframe
+  df = as.data.frame(table(allWords))
+  colnames(df) = c("Word", "Freq")
+  return(df %>% arrange(desc(Freq)))
+}
+
+negFreq = occurences(neg$Translated_Review)
+negFreq %>% top_n(50)
+
+neuFreq = occurences(neu$Translated_Review)
+neuFreq %>% top_n(50)
+
+posFreq = occurences(pos$Translated_Review)
+posFreq %>% top_n(50)
+  
+tibble::as.tibble(rvs)
+
+s = selectTopNWords(negFreq, 5)
+
+class(s)
+
+
+# IDEA
+# does review length effect positivity or negativity?
+
+# new column Length
+rvs = rvs %>% mutate("Length"=nchar(Translated_Review))
+
+rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise(mean(Length))
+
+
+
+# JOIN
+joined = left_join(data, rvs)
+joined = joined %>% filter(!is.na(Sentiment))
+tibble::as.tibble(joined)
+
+
+# IDEA
+# using joined
+# group by installs, and see how many neg, pos, neu reviews
+joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
+
+
+
+# IDEA
+# reviews by category
+joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% summarise("count"=n()) %>% arrange(desc(count))
+
+
+
+
+
+# IDEA
+# function that gets a string
+# returns rows for apps contain that str in their name
+# ! needs lazyeval libary to run
+getAppsByName <- function(d, n) {
+  print(paste("Searching for apps that contain:", n, sep=" "))
+  return(d %>% filter(grepl(n, d$App)))
+}
+
+getAppsByName(data, "Rich")
+
+
+
+# IDEA
+# get all apps that have a rating
+# in range of input, two doubles
+getAppsByRating <- function(d, n1, n2) {
+  print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
+  return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
+}
+
+getAppsByRating(data, 4.4, 4.5)
+
+
+
+# IDEA
+# get most frequent words in apps grouped by installs
+selectTopNWords <- function(d, n) {
+  #print("1")
+  output = ""
+  
+  #print("2")
+  words = d %>% top_n(n) %>% select(Word)
+
+  i = 0
+  for (w in words) {
+    output = paste(output, w, collapse=" ")
+    i = i + 1
+    if (i==n) break;
+  }
+  #print((output))
+  return(output)
+}
+
+data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise("TopWords"=selectTopNWords(occurences(App2), 3))
+
+
+
+r = data %>% select(NameRangeLen, Installs) %>% group_by(Installs) %>% summarise(max(NameRangeLen)) %>% arrange(desc(nchar(Installs)))
+print(r)
+
+tibble::as.tibble(data)
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -218,20 +393,34 @@ ggplot(data, aes(x=ePrice, y=Sales)) + geom_point() #geom_bar(stat="identity")
 # see how price and installs correlate
 d1 = data %>% select(eInstalls, ePrice) %>% group_by(eInstalls) %>% summarise(sum=sum(ePrice)) %>% arrange(desc(eInstalls))
 
-ggplot(d1, aes(y=eInstalls, x=sum)) + geom_bar(stat="identity") #geom_bar(stat="identity")
- 
-d1
-
 
 # see average prices based on categories
 d1 = data %>% select(Category, ePrice) %>% group_by(Category) %>% summarise(avg=mean(ePrice)) %>% arrange(desc(avg))
 d1
-ggplot(d1, aes(y=Category, x=factor(avg))) + geom_bar(stat="identity") #geom_bar(stat="identity")
 
+ggplot(d1, aes(y=avg, x=Category)) + 
+  geom_bar(stat="identity") +
+  geom_hline(yintercept=mean(d1$avg), col="red") + 
+  coord_flip() +
+  ggtitle("Price by Category") + 
+  ylab("Average Price") + xlab("Category")
+
+
+# group by installs, and see how many neg, pos, neu reviews
+d2 = joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
+d2
+
+ggplot(d2, aes(y=sum, x=eInstalls, fill=factor(Sentiment))) + 
+  geom_bar(stat="identity") #+
+  coord_flip()
+
+ggplot(data=d2, aes(x=as.factor(sum), fill=factor(Sentiment))) + 
+  geom_bar() + 
 
 
 
 rio::export(data, "processedData.csv")
-class(data$ePrice)
-test = rio::import(file="C:/Users/V2/Documents/processedData.csv", format="csv")
+rio::export(rvs, "processedReviews.csv")
+
+tibble::as.tibble(rvs)
 
