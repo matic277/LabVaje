@@ -7,59 +7,90 @@
 #    http://shiny.rstudio.com/
 #
 
+# install.packages("DT")
 
+
+library(DT)
 library(shiny)
 
-# Define UI for application that draws a histogram
+
+
+
 ui <- fluidPage(
    
-   # Application title
-   titlePanel("Old Faithful Geyser Data"),
+   # title
+  titlePanel("Google Play store, apps analysis"),
    
    # Sidebar with a slider input for number of bins 
-   sidebarLayout(
-      sidebarPanel(
-         sliderInput("inputID",
-                     "Title of slider",
-                     min = 1,
-                     max = 50,
-                     value = 30)
-      ),
-      
-      # Show a plot of the generated distribution
-      mainPanel(
-         plotOutput("distPlot"),
-         textOutput("textVar"),
-         plotOutput("testPlot")
-      )
-   )
+  sidebarPanel(
+    # Input: Specification of range within an interval ----
+    sliderInput(
+      "range",
+      "Range:",
+      min = 1,
+      max = 5,
+      value = c(3,4),
+      step = 0.1
+    )
+    
+  ),
+  
+  
+  navbarPage(
+    title = 'Tabs',
+    tabPanel(
+      'Slider for ratings',
+      sliderInput("range", "Range:", min=1, max=5, value=c(3,4), step = 0.1),
+      sliderValues("range")
+    )
+    
+    
+   # tabPanel('Tab2', )
+  ),
+  
+
+  
+  
+  # Main panel for displaying outputs ----
+  mainPanel(
+    
+    # Output: Table summarizing the values entered ----
+    tableOutput("values")
+    
+  )
+  
 )
+
+
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  
-   
-  output$distPlot <- renderPlot({
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
-  
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
-  })
-  
-  output$testPlot <- renderPlot({
-    data = mtcars
+  sliderValues <- reactive({
     
-    plot(x=mtcars$mpg, y=mtcars$wt)
-  })
-  
-  output$textVar <- renderText({
-    text = "teksttekstteksttekst"
+    data.frame(
+      Name = "Range",
+      Value = as.character(c(paste(input$range, collapse = " "))),
+      stringsAsFactors = FALSE
+    )
     
   })
+
+  
+  output$sliderValues <- reactive({
+    print(input$range)
+  })
+  
+  
+  
 }
+
+
+
+
+
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
