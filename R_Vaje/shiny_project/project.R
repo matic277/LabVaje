@@ -1,6 +1,11 @@
 install.packages("stringi")
 install.packages("stringr")
 
+install.packages("ggplot2")
+install.packages("rio")
+install.packages("dplyr")
+install.packages("lazyeval")
+
 library("rio")
 library("dplyr")
 library("ggplot2")
@@ -174,7 +179,14 @@ data %>% select(Rating) %>% rowwise() %>% mutate("len"=nchar(as.character(Rating
 r = data %>% rowwise() %>% mutate("RatingGroup"=round(Rating))
 r %>% select(RatingGroup) %>% filter(is.na(RatingGroup))
 
-r %>% select(RatingGroup, Reviews) %>% group_by(RatingGroup) %>% na.omit() %>% summarise(sum(as.numeric(Reviews))) %>% arrange(desc(RatingGroup))
+d = r %>% select(RatingGroup, Reviews) %>% group_by(RatingGroup) %>% na.omit() %>% summarise("sum"=sum(as.numeric(Reviews))) %>% arrange(desc(RatingGroup))
+d
+
+ggplot(d, aes(x=factor(RatingGroup), y=sum)) + geom_bar(stat="identity")
+
+
+
+
 
 
 # IDEA
@@ -198,15 +210,28 @@ get_top_n <- function(d, n) {
 data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise(get_top_n(App2, n)) %>% arrange(desc(eInstalls))
 
 
+
 # IDEA
 # count how many apps there are per group of installs
-data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
+d = data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
+d
+ggplot(d, aes(x=factor(eInstalls), y=num)) + geom_bar(stat="identity") + coord_flip()
+
 
 # IDEA
 # number of installs based on content rating and price
-data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
+d = data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
+d
+ggplot(d, aes(x=`Content Rating`, y=num)) + geom_bar(stat="identity")
 
-data %>% select(Price) %>% group_by(Price) %>% summarise("num"=n()) %>% arrange(desc(num))
+
+
+d = data %>% select(Price) %>% group_by(Price) %>% summarise("num"=n()) %>% arrange(desc(num))
+
+ggplot(d, aes(x=Price, y=num)) + geom_bar(stat="identity")
+
+
+
 
 max = max(data$ePrice)
 max
@@ -216,6 +241,7 @@ data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
 
 # IDEA
 # see which apps made most money
+data %>% select(App, App2, Sales) %>% group_by(App) %>% summarise("App2"=max(App2), "Sales"=max(Sales)) %>% arrange(desc(Sales))
 data %>% select(App, App2, Sales) %>% arrange(desc(Sales))
 
 data %>% select(App, App2, Sales) %>% rowwise() %>% mutate("SalesOut"=formatC(Sales, format="f", big.mark=",", digits=1)) %>% arrange(desc(Sales))
@@ -230,9 +256,24 @@ data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(
 
 # IDEA
 # most frequent words in apps
-occurences(data$App2) %>% top_n(20)
+d = occurences(data$App2) %>% top_n(100)
+d
 
 
+install.packages("tm")
+install.packages("wordcloud")
+install.packages("RColorBrewer")
+
+library(tm)
+library(wordcloud)
+library(RColorBrewer)
+
+wordcloud::wordcloud(words = d$Word, freq = d$Freq, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, "Set1"))
+
+
+d = data.frame(word=c("google", "new", "new", "new", "bark", "bark", "one"))
 
 
 ############### REVIEWS #############
@@ -291,9 +332,16 @@ class(s)
 # new column Length
 rvs = rvs %>% mutate("Length"=nchar(Translated_Review))
 
-rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise(mean(Length))
+d = rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise("avg"=mean(Length))
 
-
+ggplot(d, aes(x=Sentiment, y=avg, fill=Sentiment)) +
+  geom_bar(stat="identity") +
+  scale_fill_manual(values=c("#CC0000", "#e0e0e0", "#00C851")) +
+  geom_hline(yintercept=mean(d$avg), col="blue") + theme(plot.subtitle = element_text(vjust = 1), 
+    plot.caption = element_text(vjust = 1), 
+    panel.grid.major = element_line(colour = "gray83"), 
+    panel.grid.minor = element_line(colour = "snow3"), 
+    panel.background = element_rect(fill = NA)) +labs(y = "Average length")
 
 # JOIN
 joined = left_join(data, rvs)
@@ -310,11 +358,22 @@ joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% s
 
 # IDEA
 # reviews by category
-joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% summarise("count"=n()) %>% arrange(desc(count))
+d = joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% summarise("count"=n()) %>% arrange(desc(count))
+
+plot = ggplot(data=d, aes(x=factor(Category), y=count, fill=Sentiment)) + 
+  geom_bar(stat="identity") + coord_flip() +
+  scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
+  ylab("Number of reviews") + xlab("Number of installs")
+
+plot
 
 
 
+install.packages("ggThemeAssist")
 
+library("ggThemeAssist")
+
+ggplotgui::ggplot_shiny(d)
 
 # IDEA
 # function that gets a string
@@ -325,7 +384,7 @@ getAppsByName <- function(d, n) {
   return(d %>% filter(grepl(n, d$App)))
 }
 
-getAppsByName(data, "Rich")
+getAppsByName(data, "Toca Life: City")
 
 
 
@@ -344,19 +403,14 @@ getAppsByRating(data, 4.4, 4.5)
 # IDEA
 # get most frequent words in apps grouped by installs
 selectTopNWords <- function(d, n) {
-  #print("1")
   output = ""
-  
-  #print("2")
   words = d %>% top_n(n) %>% select(Word)
-
   i = 0
   for (w in words) {
     output = paste(output, w, collapse=" ")
     i = i + 1
     if (i==n) break;
   }
-  #print((output))
   return(output)
 }
 
@@ -391,7 +445,10 @@ ggplot(data, aes(x=ePrice, y=Sales)) + geom_point() #geom_bar(stat="identity")
 
 
 # see how price and installs correlate
-d1 = data %>% select(eInstalls, ePrice) %>% group_by(eInstalls) %>% summarise(sum=sum(ePrice)) %>% arrange(desc(eInstalls))
+d1 = data %>% select(eInstalls, ePrice) %>% group_by(eInstalls) %>% summarise(sum=mean(ePrice)) %>% arrange(desc(eInstalls))
+d1
+
+ggplot(d1, aes(x=factor(eInstalls), y=sum)) + geom_bar(stat="identity") + coord_flip()
 
 
 # see average prices based on categories
@@ -401,6 +458,7 @@ d1
 ggplot(d1, aes(y=avg, x=Category)) + 
   geom_bar(stat="identity") +
   geom_hline(yintercept=mean(d1$avg), col="red") + 
+  geom_text(aes(-1,1,label = 1.8, vjust = -1)) +
   coord_flip() +
   ggtitle("Price by Category") + 
   ylab("Average Price") + xlab("Category")
@@ -410,12 +468,10 @@ ggplot(d1, aes(y=avg, x=Category)) +
 d2 = joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
 d2
 
-ggplot(d2, aes(y=sum, x=eInstalls, fill=factor(Sentiment))) + 
-  geom_bar(stat="identity") #+
-  coord_flip()
-
-ggplot(data=d2, aes(x=as.factor(sum), fill=factor(Sentiment))) + 
-  geom_bar() + 
+ggplot(data=d2, aes(x=factor(eInstalls), y=sum, fill=Sentiment)) + 
+  geom_bar(stat="identity") +
+  scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
+  ylab("Number of reviews") + xlab("Number of installs")
 
 
 
