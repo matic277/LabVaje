@@ -11,6 +11,11 @@ install.packages("wordcloud")
 install.packages("RColorBrewer")
 install.packages("ggThemeAssist")
 
+install.packages("gridExtra")
+
+
+library("gridExtra")
+
 library("ggThemeAssist")
 library("tm")
 library("wordcloud")
@@ -35,12 +40,12 @@ ProcessedDataPath = paste(sourceDir, "processedData.csv", sep="")
 ProcessedReviewsPath = paste(sourceDir, "processedReviews.csv", sep="")
 
 # raw data apps
-rdata = rio::import(file=RawDataPath, format="csv")
+# rdata = rio::import(file=RawDataPath, format="csv")
 # processed data apps
 data = rio::import(file=ProcessedDataPath, format="csv")
 
 # raw reviews
-rrvs = rio::import(file=RawReviewsPath, format="csv")
+#rrvs = rio::import(file=RawReviewsPath, format="csv")
 # processed reviews
 rvs = rio::import(file=ProcessedReviewsPath, format="csv")
 
@@ -86,9 +91,6 @@ data = data %>% mutate("eInstalls"=convertInstalls(Installs))
 
 
 
-
-
-
 # IDEJA
 # najbolj popularne apliakcije glede na kategorijo
 
@@ -124,11 +126,12 @@ as.data.frame(data)
 # tibble::as.tibble(genre2)
 # tibble::as.tibble(combined)
 
+
 # RESULT
 r = combined %>% select(Genres, eInstalls) %>% group_by(Genres) %>% summarise("sum"=sum(eInstalls)) %>% arrange(desc(sum))
 tibble::as.tibble(r)
 
-ggplot(r, aes(x="", y=sum, fill=Genres)) + geom_bar(stat="identity", width=1) + coord_polar("y", start=0)
+sggplot(r, aes(x="", y=sum, fill=Genres)) + geom_bar(stat="identity", width=1) + coord_polar("y", start=0)
 
 
 
@@ -175,17 +178,17 @@ data = data %>% mutate("Sales"=(ePrice * eInstalls))
 
 # IDEA
 # rating and reviews
-data %>% select(Rating, Reviews) %>% group_by(Rating) %>% summarise(sum(Reviews)) %>% arrange(desc(Rating))
-
-data %>% select(Rating) %>% rowwise() %>% mutate("len"=nchar(as.character(Rating))) %>% arrange(desc(len)) 
-
-r = data %>% rowwise() %>% mutate("RatingGroup"=round(Rating))
-r %>% select(RatingGroup) %>% filter(is.na(RatingGroup))
-
-d = r %>% select(RatingGroup, Reviews) %>% group_by(RatingGroup) %>% na.omit() %>% summarise("sum"=sum(as.numeric(Reviews))) %>% arrange(desc(RatingGroup))
-d
-
-ggplot(d, aes(x=factor(RatingGroup), y=sum)) + geom_bar(stat="identity")
+# data %>% select(Rating, Reviews) %>% group_by(Rating) %>% summarise(sum(Reviews)) %>% arrange(desc(Rating))
+# 
+# data %>% select(Rating) %>% rowwise() %>% mutate("len"=nchar(as.character(Rating))) %>% arrange(desc(len)) 
+# 
+# r = data %>% rowwise() %>% mutate("RatingGroup"=round(Rating))
+# r %>% select(RatingGroup) %>% filter(is.na(RatingGroup))
+# 
+# d = r %>% select(RatingGroup, Reviews) %>% group_by(RatingGroup) %>% na.omit() %>% summarise("sum"=sum(as.numeric(Reviews))) %>% arrange(desc(RatingGroup))
+# d
+# 
+# ggplot(d, aes(x=factor(RatingGroup), y=sum)) + geom_bar(stat="identity")
 
 
 
@@ -194,7 +197,7 @@ ggplot(d, aes(x=factor(RatingGroup), y=sum)) + geom_bar(stat="identity")
 
 # IDEA
 # category and reviews
-data %>% select(Category, Reviews) %>% group_by(Category) %>% summarise("sum"=sum(Reviews)) %>% arrange(desc(sum))
+# data %>% select(Category, Reviews) %>% group_by(Category) %>% summarise("sum"=sum(Reviews)) %>% arrange(desc(sum))
 
 # IDEA
 # get n app names that have the most installs
@@ -216,80 +219,115 @@ data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise(get_top_n
 
 # IDEA +++
 # count how many apps there are per group of installs
-d = data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
-d
-ggplot(d, aes(x=factor(eInstalls), y=num)) + geom_bar(stat="identity", fill="green") + coord_flip() + theme(plot.subtitle = element_text(vjust = 1), 
-    plot.caption = element_text(vjust = 1), 
-    axis.line = element_line(colour = "gray59", 
-        linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
-    panel.grid.major = element_line(colour = "gray77"), 
-    panel.grid.minor = element_line(colour = NA, 
-        linetype = "blank"), axis.title = element_text(size = 12), 
-    axis.text = element_text(size = 12, vjust = 0.4), 
-    axis.text.x = element_text(size = 12), 
-    axis.text.y = element_text(size = 12), 
-    plot.title = element_text(size = 15, 
-        hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "Number of apps per installations", 
-    x = "Numer of installs", y = "Number of apps")
+# d = data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
+# d
+# ggplot(d, aes(x=factor(eInstalls), y=num)) + geom_bar(stat="identity", fill="green") + coord_flip() + theme(plot.subtitle = element_text(vjust = 1), 
+#     plot.caption = element_text(vjust = 1), 
+#     axis.line = element_line(colour = "gray59", 
+#         linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
+#     panel.grid.major = element_line(colour = "gray77"), 
+#     panel.grid.minor = element_line(colour = NA, 
+#         linetype = "blank"), axis.title = element_text(size = 12), 
+#     axis.text = element_text(size = 12, vjust = 0.4), 
+#     axis.text.x = element_text(size = 12), 
+#     axis.text.y = element_text(size = 12), 
+#     plot.title = element_text(size = 15, 
+#         hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "Number of apps per installations", 
+#     x = "Numer of installs", y = "Number of apps")
 
 
 # IDEA +++
 # number of installs based on content rating and price
-d = data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
-d
-ggplot(d, aes(x=`Content Rating`, y=num)) + geom_bar(stat="identity") + 
-  theme(plot.subtitle = element_text(vjust = 1), 
-  plot.caption = element_text(vjust = 1), 
-  axis.line = element_line(colour = "gray59", 
-                           linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
-  panel.grid.major = element_line(colour = "gray77"), 
-  panel.grid.minor = element_line(colour = NA, 
-                                  linetype = "blank"), axis.title = element_text(size = 12), 
-  axis.text = element_text(size = 12, vjust = 0.4), 
-  axis.text.x = element_text(size = 12), 
-  axis.text.y = element_text(size = 12), 
-  plot.title = element_text(size = 15, 
-                            hjust = 0.5), panel.background = element_rect(fill = NA)) +
-  labs(title = "Number of apps installed per category", 
-    x = "Category", y = "Number of apps")
+# d = data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
+# d
+# ggplot(d, aes(x=`Content Rating`, y=num)) + geom_bar(stat="identity") + 
+#   theme(plot.subtitle = element_text(vjust = 1), 
+#   plot.caption = element_text(vjust = 1), 
+#   axis.line = element_line(colour = "gray59", 
+#                            linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
+#   panel.grid.major = element_line(colour = "gray77"), 
+#   panel.grid.minor = element_line(colour = NA, 
+#                                   linetype = "blank"), axis.title = element_text(size = 12), 
+#   axis.text = element_text(size = 12, vjust = 0.4), 
+#   axis.text.x = element_text(size = 12), 
+#   axis.text.y = element_text(size = 12), 
+#   plot.title = element_text(size = 15, 
+#                             hjust = 0.5), panel.background = element_rect(fill = NA)) +
+#   labs(title = "Number of apps installed per category", 
+#     x = "Category", y = "Number of apps")
 
 
 
 
-d = data %>% select(Price) %>% group_by(Price) %>% summarise("num"=n()) %>% arrange(desc(num))
+# ADD TO MARKDOWN!!!!
 
-ggplot(d, aes(x=Price, y=num)) + geom_bar(stat="identity")
+# priceRange <- function(d) {
+#   if (d == 0) return(0)
+#   else {
+#     prices = c(0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 20, 300, 350)
+#     
+#     for (p in prices) if (d < p) return(p)
+#     return(400)
+#   }
+# }
+# 
+# r = data %>% select(ePrice) %>% rowwise() %>% mutate("Price2"=priceRange(ePrice)) %>% arrange(desc(Price2))
+# r = r %>% select(Price2) %>% group_by(Price2) %>% summarise("num"=n()) %>% arrange(num)
+# r = r[r$Price2 != 0, ]
+# 
+# g1 = ggplot(r, aes(x=Price2, y=num)) + geom_bar(stat="identity", width=5) + theme(plot.subtitle = element_text(vjust = 1), 
+#     plot.caption = element_text(vjust = 1), 
+#     panel.grid.major = element_line(colour = "gray47"), 
+#     panel.grid.minor = element_line(colour = "gray80", 
+#         linetype = "blank"), axis.title = element_text(size = 15), 
+#     axis.text = element_text(size = 14), 
+#     axis.text.x = element_text(size = 14), 
+#     plot.title = element_text(size = 14), 
+#     panel.background = element_rect(fill = NA)) +labs(x = "Price group", y = "Number of apps")
+# g1
+# 
+# rr = data %>% select(ePrice) %>% rowwise() %>% mutate("Price2"=ifelse(ePrice==0, "Free", "Costs"))
+# rr
+# rr = rr %>% group_by(Price2) %>% summarise("count"=n())
+# 
+# g2 = ggplot(rr, aes(x=factor(Price2), y=count)) + geom_bar(stat="identity", width = 0.1) + 
+#   theme(plot.subtitle = element_text(vjust = 1), 
+#           plot.caption = element_text(vjust = 1), 
+#           panel.grid.major = element_line(colour = "gray47"), 
+#           panel.grid.minor = element_line(colour = "gray80", 
+#                                           linetype = "blank"), axis.title = element_text(size = 15), 
+#           axis.text = element_text(size = 14), 
+#           axis.text.x = element_text(size = 14), 
+#           plot.title = element_text(size = 14), 
+#           panel.background = element_rect(fill = NA)) +labs(x = "Price group", y = "Number of apps")
+# g2
 
 
-
+gridExtra::grid.arrange(g1, g2, ncol=2)
 
 max = max(data$ePrice)
 max
 
-data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
+# data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
 
 
-# IDEA !!!
+# IDEA +++
 # see which apps made most money
-data %>% select(App, App2, Sales) %>% group_by(App) %>% summarise("App2"=max(App2), "Sales"=max(Sales), "SalesOut"=formatC(Sales, format="f", big.mark=",", digits=0)) %>% arrange(desc(Sales))
+# data %>% select(App, Sales) %>% group_by(App) %>% 
+#   summarise("Sales"=max(Sales), "SalesOut"=formatC(Sales, format="f", big.mark=",", digits=0)) %>% 
+#   arrange(desc(Sales))
+
 
 # formatC(1000.64, format="f", big.mark=",", digits=0)
 
 
 # IDEA !!!
 # see which category made most money
-d = data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(Sales), "count"=n()) %>% arrange(desc(sum))
+# d = data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(Sales), "count"=n()) %>% arrange(desc(sum))
+# 
+# ggplot(d, aes(x=factor(Category), y=sum)) + geom_bar(stat="identity") + coord_flip()
 
-ggplot(d, aes(x=factor(Category), y=sum)) + geom_bar(stat="identity") + coord_flip()
 
-
-# IDEA !!!
-# most frequent words in apps
-d = occurences(data$App2) %>% top_n(300)
-
-wordcloud::wordcloud(words = d$Word, freq = d$Freq, min.freq = 1,
-          max.words=300, random.order=FALSE, rot.per=0.0, 
-          colors=brewer.pal(8, "Set1"))
 
 
 
@@ -307,64 +345,79 @@ rvs = rio::import(file=ProcessedReviewsPath, format="csv")
 
 
 
+# IDEA !!! +++
+# most frequent words in apps
+# d = occurences(data$App2) %>% top_n(30)
+# d
+# tibble::as.tibble(d)
+# 
+# wordcloud::wordcloud(words = d$Word, freq = d$Freq, min.freq = 1,
+#                      max.words=300, random.order=FALSE, rot.per=0.0,
+#                      colors=brewer.pal(8, "Set1"))
 
 
 
 
-# IDEA !!!
+# IDEA !!! +++
 # most frequest words in positive and negative reviews
-neg = rvs %>% filter(Sentiment=="Negative") %>% select(Sentiment, Translated_Review, App)
-neu = rvs %>% filter(Sentiment=="Neutral") %>% select(Sentiment, Translated_Review, App)
-pos = rvs %>% filter(Sentiment=="Positive") %>% select(Sentiment, Translated_Review, App)
+# neg = rvs %>% filter(Sentiment=="Negative") %>% select(Sentiment, Translated_Review, App)
+# neu = rvs %>% filter(Sentiment=="Neutral") %>% select(Sentiment, Translated_Review, App)
+# pos = rvs %>% filter(Sentiment=="Positive") %>% select(Sentiment, Translated_Review, App)
+# 
+# occurences <- function(d) {
+#   allWords = ""
+#   for (e in d) {
+#     split = str_split(e, " ")[[1]]
+#     allWords = paste(allWords, paste(split, collapse=" "))
+#   }
+#   # get a pair of word - num_of_occurrences and put it in a dataframe
+#   df = as.data.frame(table(allWords))
+#   colnames(df) = c("Word", "Freq")
+#   print(class(df))
+#   return(df %>% arrange(desc(Freq)))
+# }
+# 
+# t = c("one", "two", "three")
+# y = "four five six"
+# 
+# paste(y, paste(t, collapse=" "))
+# 
+# negFreq = occurences(neg$Translated_Review)
+# negFreq %>% top_n(50)
+# 
+# wordcloud::wordcloud(words = negFreq$Word, freq = negFreq$Freq, min.freq = 1,
+#                      max.words=50, random.order=FALSE, rot.per=0.0, 
+#                      colors=brewer.pal(8, "Set1"))
+# 
+# neuFreq = occurences(neu$Translated_Review)
+# neuFreq %>% top_n(50)
+# 
+# posFreq = occurences(pos$Translated_Review)
+# posFreq %>% top_n(50)
+#   
+# tibble::as.tibble(rvs)
+# 
+# s = selectTopNWords(negFreq, 5)
+# s
+# 
 
-occurences <- function(d) {
-  allWords = c("")
-  for (e in d) {
-    split = str_split(e, " ")[[1]]
-    allWords = combine(allWords, split)
-  }
-  # get a pair of word - num_of_occurrences and put it in a dataframe
-  df = as.data.frame(table(allWords))
-  colnames(df) = c("Word", "Freq")
-  return(df %>% arrange(desc(Freq)))
-}
 
-negFreq = occurences(neg$Translated_Review)
-negFreq %>% top_n(50)
-
-wordcloud::wordcloud(words = negFreq$Word, freq = negFreq$Freq, min.freq = 1,
-                     max.words=50, random.order=FALSE, rot.per=0.0, 
-                     colors=brewer.pal(8, "Set1"))
-
-neuFreq = occurences(neu$Translated_Review)
-neuFreq %>% top_n(50)
-
-posFreq = occurences(pos$Translated_Review)
-posFreq %>% top_n(50)
-  
-tibble::as.tibble(rvs)
-
-s = selectTopNWords(negFreq, 5)
-s
-
-
-
-# IDEA !!!
+# IDEA !!! +++
 # does review length effect positivity or negativity?
 
-# new column Length
-rvs = rvs %>% mutate("Length"=nchar(Translated_Review))
-
-d = rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise("avg"=mean(Length))
-d
-ggplot(d, aes(x=Sentiment, y=avg, fill=Sentiment)) +
-  geom_bar(stat="identity") +
-  scale_fill_manual(values=c("#CC0000", "#e0e0e0", "#00C851")) +
-  geom_hline(yintercept=mean(d$avg), col="blue") + theme(plot.subtitle = element_text(vjust = 1), 
-    plot.caption = element_text(vjust = 1), 
-    panel.grid.major = element_line(colour = "gray83"), 
-    panel.grid.minor = element_line(colour = "snow3"), 
-    panel.background = element_rect(fill = NA)) +labs(y = "Average length")
+# # new column Length
+# rvs = rvs %>% mutate("Length"=nchar(Translated_Review))
+# 
+# d = rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise("avg"=mean(Length))
+# d
+# ggplot(d, aes(x=Sentiment, y=avg, fill=Sentiment)) +
+#   geom_bar(stat="identity") +
+#   scale_fill_manual(values=c("#CC0000", "#e0e0e0", "#00C851")) +
+#   geom_hline(yintercept=mean(d$avg), col="blue") + theme(plot.subtitle = element_text(vjust = 1), 
+#     plot.caption = element_text(vjust = 1), 
+#     panel.grid.major = element_line(colour = "gray83"), 
+#     panel.grid.minor = element_line(colour = "snow3"), 
+#     panel.background = element_rect(fill = NA)) +labs(y = "Average length")
 
 # JOIN
 joined = left_join(data, rvs)
@@ -372,112 +425,109 @@ joined = joined %>% filter(!is.na(Sentiment))
 tibble::as.tibble(joined)
 
 
-# IDEA !!!
+# IDEA !!! +++
 # using joined
 # group by installs, and see how many neg, pos, neu reviews
-d = joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% summarise("count"=n()) %>% arrange(desc(count))
-d
-
-
-plot = ggplot(data=d, aes(x=factor(Category), y=count, fill=Sentiment)) + 
-  geom_bar(stat="identity") + coord_flip() +
-  scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
-  ylab("Number of reviews") + xlab("Number of installs") + theme(plot.subtitle = element_text(vjust = 1), 
-    plot.caption = element_text(vjust = 1), 
-    panel.grid.major = element_line(colour = "lavender"), 
-    panel.grid.minor = element_line(linetype = "blank"), 
-    axis.text = element_text(size = 11), 
-    axis.text.y = element_text(size = 9, 
-        vjust = 0.3), plot.title = element_text(size = 10, 
-        hjust = 0.5), legend.text = element_text(size = 12), 
-    legend.title = element_text(size = 13), 
-    panel.background = element_rect(fill = NA, 
-        linetype = "twodash"), legend.background = element_rect(fill = NA)) +labs(title = "Reviews and Installs")
-
-plot
+# d = joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% summarise("count"=n()) %>% arrange(desc(count))
+# 
+# ggplot(data=d, aes(x=factor(Category), y=count, fill=Sentiment)) + 
+#   geom_bar(stat="identity") + coord_flip() +
+#   scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
+#   ylab("Number of reviews") + xlab("Number of installs") + theme(plot.subtitle = element_text(vjust = 1), 
+#     plot.caption = element_text(vjust = 1), 
+#     panel.grid.major = element_line(colour = "lavender"), 
+#     panel.grid.minor = element_line(linetype = "blank"), 
+#     axis.text = element_text(size = 11), 
+#     axis.text.y = element_text(size = 9, 
+#         vjust = 0.3), plot.title = element_text(size = 10, 
+#         hjust = 0.5), legend.text = element_text(size = 12), 
+#     legend.title = element_text(size = 13), 
+#     panel.background = element_rect(fill = NA, 
+#         linetype = "twodash"), legend.background = element_rect(fill = NA)) +labs(title = "Reviews and Installs")
 
 
 
 
 
 
-# IDEA !!!
+
+
+# IDEA !!! +++
 # function that gets a string
 # returns rows for apps contain that str in their name
 # ! needs lazyeval libary to run
-getAppsByName <- function(d, n) {
-  print(paste("Searching for apps that contain:", n, sep=" "))
-  return(d %>% filter(grepl(n, d$App)))
-}
+# getAppsByName <- function(d, n) {
+#   print(paste("Searching for apps that contain:", n, sep=" "))
+#   return(d %>% filter(grepl(n, d$App)))
+# }
+# 
+# getAppsByName(data, "Google")
+# data
 
-getAppsByName(data, "Google")
-data
 
-
-# IDEA !!!
+# IDEA !!! +++
 # get all apps that have a rating
 # in range of input, two doubles
-getAppsByRating <- function(d, n1, n2) {
-  print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
-  return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
-}
+# getAppsByRating <- function(d, n1, n2) {
+#   print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
+#   return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
+# }
+# 
+# getAppsByRating(data, 4.4, 4.5)
 
-getAppsByRating(data, 4.4, 4.5)
 
 
-
-# IDEA !!!
+# IDEA !!! +++
 # get most frequent words in apps grouped by installs
-selectTopNWords <- function(d, n) {
-  output = ""
-  words = d %>% top_n(n) %>% select(Word)
-  i = 0
-  for (w in words) {
-    output = paste(output, w, collapse=" ")
-    i = i + 1
-    if (i==n) break;
-  }
-  return(output)
-}
+# selectTopNWords <- function(d, n) {
+#   output = ""
+#   words = d %>% top_n(n) %>% select(Word)
+#   i = 0
+#   for (w in words) {
+#     output = paste(output, w, collapse=" ")
+#     i = i + 1
+#     if (i==n) break;
+#   }
+#   return(output)
+# }
+# 
+# data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise("TopWords"=selectTopNWords(occurences(App2), 3))
 
-data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise("TopWords"=selectTopNWords(occurences(App2), 3))
 
 
-
-# IDEA !!!!
+# IDEA !!!! +++
 # name length and installs
-require(scales)
-r = data %>% select(NameRangeLen, eInstalls) %>% group_by(eInstalls) %>% summarise("len"=mean(NameRangeLen)) %>% arrange(desc(eInstalls))
-
-print(r)
-
-r$eInstalls <- factor(r$eInstalls, levels = r$eInstalls[order(r$len, decreasing = TRUE)])
-
-ggplot(r, aes(x=eInstalls, y=len, group=1)) + geom_line(colour="red") + geom_point(colour="black", size=0.5) + theme(plot.subtitle = element_text(vjust = 1), 
-    plot.caption = element_text(vjust = 1), 
-    panel.grid.major = element_line(colour = "gray88", 
-        linetype = "blank"), panel.grid.minor = element_line(colour = "lightsteelblue"), 
-    axis.title = element_text(size = 13), 
-    plot.title = element_text(size = 15, 
-        hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "App name length and installs") + 
-  scale_x_continuous(labels = comma)+labs(x = "Number of installs", y = "Length of name")
+# require(scales)
+# r = data %>% select(NameRangeLen, eInstalls) %>% group_by(eInstalls) %>% summarise("len"=mean(NameRangeLen)) %>% arrange(desc(eInstalls))
+# 
+# print(r)
+# 
+# r$eInstalls <- factor(r$eInstalls, levels = r$eInstalls[order(r$len, decreasing = TRUE)])
+# 
+# ggplot(r, aes(x=eInstalls, y=len, group=1)) + geom_line(colour="red", size=1.5) + geom_point(colour="black", size=1.5) + theme(plot.subtitle = element_text(vjust = 1), 
+#     plot.caption = element_text(vjust = 1), 
+#     panel.grid.major = element_line(colour = "gray88", 
+#         linetype = "blank"), panel.grid.minor = element_line(colour = "lightsteelblue"), 
+#     axis.title = element_text(size = 13), 
+#     plot.title = element_text(size = 15, 
+#         hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "App name length and installs") + 
+#   scale_x_continuous(labels = comma)+labs(x = "Number of installs", y = "Length of name")
 
 tibble::as.tibble(data)
 
 
-# !!! boxplot
-
-ggplot(data, aes(x=factor(eInstalls), y=NameRangeLen)) + 
-  geom_boxplot(fill='#56B4E9', color="black") + coord_flip() + theme(plot.subtitle = element_text(vjust = 1), 
-    plot.caption = element_text(vjust = 1), 
-    panel.grid.major = element_line(colour = "gray75"), 
-    axis.title = element_text(size = 12), 
-    axis.text.x = element_text(size = 12, 
-        vjust = 0), axis.text.y = element_text(vjust = 0.4), 
-    plot.title = element_text(size = 14, 
-        hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "Number of installs and app name length", 
-    x = "Number of installs", y = "Length of app name")
-
+# !!! boxplot +++
+# ggplot(data, aes(x=factor(eInstalls), y=NameRangeLen)) + 
+#   geom_boxplot(fill='#56B4E9', color="black") + coord_flip() + theme(plot.subtitle = element_text(vjust = 1), 
+#     plot.caption = element_text(vjust = 1), 
+#     panel.grid.major = element_line(colour = "gray75"), 
+#     axis.title = element_text(size = 12), 
+#     axis.text.x = element_text(size = 12, 
+#         vjust = 0), axis.text.y = element_text(vjust = 0.4), 
+#     plot.title = element_text(size = 14, 
+#         hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "Number of installs and app name length", 
+#     x = "Number of installs", y = "Length of app name")
+# 
 
 
 
@@ -492,44 +542,35 @@ ggplot(data, aes(x=factor(eInstalls), y=NameRangeLen)) +
 #########################
 backup2 = data
 
-# see how total sales and price correlate
-ggplot(data, aes(x=ePrice, y=Sales)) + geom_point() #geom_bar(stat="identity")
+# # see how price and installs correlate
+# d1 = data %>% select(eInstalls, ePrice) %>% group_by(eInstalls) %>% summarise(avg=mean(ePrice)) %>% arrange(desc(eInstalls))
+# ggplot(d1, aes(x=factor(eInstalls), y=avg, fill=avg)) + geom_bar(stat="identity") + coord_flip()
+
+# d1 = data %>% select(eInstalls, ePrice)
+# ggplot(d1, aes(x=factor(eInstalls), y=ePrice)) + geom_boxplot() + coord_flip()
+# 
+
+# # see average prices based on categories
+# d1 = data %>% select(Category, ePrice) %>% group_by(Category) %>% summarise(avg=mean(ePrice)) %>% arrange(desc(avg))
+# d1
+# 
+# ggplot(d1, aes(y=avg, x=Category)) + 
+#   geom_bar(stat="identity") +
+#   geom_hline(yintercept=mean(d1$avg), col="red") + 
+#   geom_text(aes(-1,1,label = 1.8, vjust = -1)) +
+#   coord_flip() +
+#   ggtitle("Price by Category") + 
+#   ylab("Average Price") + xlab("Category")
 
 
-
-
-# see how price and installs correlate
-d1 = data %>% select(eInstalls, ePrice) %>% group_by(eInstalls) %>% summarise(avg=mean(ePrice)) %>% arrange(desc(eInstalls))
-d1
-
-d1 = data %>% select(eInstalls, ePrice)
-
-ggplot(d1, aes(x=factor(eInstalls), y=avg, fill=avg)) + geom_bar(stat="identity") + coord_flip()
-
-ggplot(d1, aes(x=factor(eInstalls), y=ePrice)) + geom_boxplot()
-
-
-# see average prices based on categories
-d1 = data %>% select(Category, ePrice) %>% group_by(Category) %>% summarise(avg=mean(ePrice)) %>% arrange(desc(avg))
-d1
-
-ggplot(d1, aes(y=avg, x=Category)) + 
-  geom_bar(stat="identity") +
-  geom_hline(yintercept=mean(d1$avg), col="red") + 
-  geom_text(aes(-1,1,label = 1.8, vjust = -1)) +
-  coord_flip() +
-  ggtitle("Price by Category") + 
-  ylab("Average Price") + xlab("Category")
-
-
-# group by installs, and see how many neg, pos, neu reviews
-d2 = joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
-d2
-
-ggplot(data=d2, aes(x=factor(eInstalls), y=sum, fill=Sentiment)) + 
-  geom_bar(stat="identity") +
-  scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
-  ylab("Number of reviews") + xlab("Number of installs")
+# # group by installs, and see how many neg, pos, neu reviews
+# d2 = joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
+# d2
+# 
+# ggplot(data=d2, aes(x=factor(eInstalls), y=sum, fill=Sentiment)) + 
+#   geom_bar(stat="identity") +
+#   scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
+#   ylab("Number of reviews") + xlab("Number of installs")
 
 
 

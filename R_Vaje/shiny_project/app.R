@@ -9,9 +9,25 @@
 
 # install.packages("DT")
 
+# install.packages("stringi")
+# install.packages("stringr")
+# 
+# install.packages("ggplot2")
+# install.packages("rio")
+# install.packages("dplyr")
+# install.packages("lazyeval")
+# 
+# install.packages("tm")
+# install.packages("wordcloud")
+# install.packages("RColorBrewer")
+# install.packages("ggThemeAssist")
 
 library(DT)
 library(shiny)
+
+require(scales)
+
+library("gridExtra")
 
 library("wordcloud")
 library("RColorBrewer")
@@ -120,8 +136,7 @@ ui <- navbarPage(
             "Apps names with most installs" = 1,
             "Frequent words in positive reviews" = 2,
             "Frequent words in neutral reviews" = 3,
-            "Frequent words in negative reviews" = 4,
-            "Draw Graphs" = 5
+            "Frequent words in negative reviews" = 4
           ), 
           selected = 1
         ),
@@ -146,12 +161,40 @@ ui <- navbarPage(
             sidebarLayout(
               
               sidebarPanel(
+                # element
+                radioButtons(
+                  inputId = "radioInputPlots",
+                  label = h3("Select criteria"),
+                  choices = list(
+                    "Number of apps per installation" = 1,
+                    "Number of apps per category" = 2,
+                    "Most frequent words in apps" = 3,
+                    "Number of apps installed per category" = 4,
+                    "Number of apps based on price" = 5,
+                    "Sales based on category" = 6,
+                    "Review length based on sentiment" = 7,
+                    "Number of reviews based on categories" = 8,
+                    "App name length based on installs" = 9,
+                    "App name length based on installs boxplot" = 10,
+                    "Number of installs and average price" = 11,
+                    "Average price based on category" = 12,
+                    "Reviews based on number of installs" = 13,
+                    "" = 14
+                    
+                  ), 
+                  selected = 1
+                ),
                 
-                
+                # element
+                submitButton(
+                  "Submit"
+                )
               ),
               
-              mainPanel= plotOutput(outputId="somePlots")
-                #renderDataTable("freqWords")
+              
+              mainPanel(
+                plotOutput(outputId="somePlots")
+              )
                
               
               
@@ -168,10 +211,12 @@ ui <- navbarPage(
 #   fluidRow(column(3, verbatimTextOutput("value")))
 # )
 
-# Server -----------------------------------------------------------------------
+#------------- SERVER -------------------------------------------
 server <- function(input, output, session) {
   
-  # search by name
+  
+  
+  #---------------- SEARCH BY NAME TAB --------------------------
   output$nameSearch <- DT::renderDataTable({
     getAppsByName <- function(d, n) {
       #print(paste("Searching for apps that contain:", n, sep=" "))
@@ -191,7 +236,9 @@ server <- function(input, output, session) {
     datatable(r, options=list(dom='pt'))
   })
   
-  # frequent words
+  
+  
+  #--------------------- FREQ WORDS TAB ---------------------------
   output$freqWords <- DT::renderDataTable({
     n = 5
     get_top_n <- function(d, n) {
@@ -204,11 +251,10 @@ server <- function(input, output, session) {
       }
       return(str)
     }
-    
     occurences <- function(d) {
       allWords = c("")
       for (e in d) {
-        split = str_split(e, " ")[[1]]
+        words = str_split(e, " ")[[1]]
         allWords = combine(allWords, split)
       }
       # get a pair of word - num_of_occurrences and put it in a dataframe
@@ -216,11 +262,11 @@ server <- function(input, output, session) {
       colnames(df) = c("Word", "Freq")
       return(df %>% arrange(desc(Freq)))
     }
-    
     # frequent words in apps by installs
     if (input$radioInput == 1) {
       data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% 
-        summarise("Names"=get_top_n(App2, n)) %>% arrange(desc(eInstalls))
+        summarise("Names"=get_top_n(App2, n)) %>% arrange(desc(eInstalls)) %>%
+        mutate("Names"=substr(Names, 3, nchar(Names)))
     }
     # positive reviews
     else if (input$radioInput == 2) {
@@ -243,44 +289,271 @@ server <- function(input, output, session) {
     }
   })
   
-  # some plots
+  #--------------------- SOME PLOTS TAB ----------------------------------------------
   output$somePlots <- renderPlot({
     # count how many apps there are per group of installs
-    d = data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
-    ggplot(d, aes(x=factor(eInstalls), y=num)) + geom_bar(stat="identity", fill="green") + coord_flip() + 
-      theme(plot.subtitle = element_text(vjust = 1), 
-      plot.caption = element_text(vjust = 1), 
-      axis.line = element_line(colour = "gray59", 
-                               linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
-      panel.grid.major = element_line(colour = "gray77"), 
-      panel.grid.minor = element_line(colour = NA, 
-                                      linetype = "blank"), axis.title = element_text(size = 12), 
-      axis.text = element_text(size = 12, vjust = 0.4), 
-      axis.text.x = element_text(size = 12), 
-      axis.text.y = element_text(size = 12), 
-      plot.title = element_text(size = 15, 
-                                hjust = 0.5), panel.background = element_rect(fill = NA)) + 
-      labs(title = "Number of apps per installations", 
-            x = "Numer of installs", y = "Number of apps")
-    
+    if (input$radioInputPlots == 1) {
+      d = data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
+      ggplot(d, aes(x=factor(eInstalls), y=num)) + geom_bar(stat="identity", fill="green") + coord_flip() + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+        plot.caption = element_text(vjust = 1), 
+        axis.line = element_line(colour = "gray59", 
+                                 linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
+        panel.grid.major = element_line(colour = "gray77"), 
+        panel.grid.minor = element_line(colour = NA, 
+                                        linetype = "blank"), axis.title = element_text(size = 12), 
+        axis.text = element_text(size = 12, vjust = 0.4), 
+        axis.text.x = element_text(size = 12), 
+        axis.text.y = element_text(size = 12), 
+        plot.title = element_text(size = 15, 
+                                  hjust = 0.5), panel.background = element_rect(fill = NA)) + 
+        labs(title = "Number of apps per installations", 
+              x = "Numer of installs", y = "Number of apps")
+    }
     # number of apps installed per category
-    d = data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
-    ggplot(d, aes(x=`Content Rating`, y=num)) + geom_bar(stat="identity") + 
-      theme(plot.subtitle = element_text(vjust = 1), 
-            plot.caption = element_text(vjust = 1), 
-            axis.line = element_line(colour = "gray59", 
-                                     linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
-            panel.grid.major = element_line(colour = "gray77"), 
-            panel.grid.minor = element_line(colour = NA, 
-                                            linetype = "blank"), axis.title = element_text(size = 12), 
-            axis.text = element_text(size = 12, vjust = 0.4), 
-            axis.text.x = element_text(size = 12), 
-            axis.text.y = element_text(size = 12), 
-            plot.title = element_text(size = 15, 
-                                      hjust = 0.5), panel.background = element_rect(fill = NA)) +
-      labs(title = "Number of apps installed per category", 
-           x = "Category", y = "Number of apps")
+    else if (input$radioInputPlots == 2) {
+      d = data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
+      ggplot(d, aes(x=`Content Rating`, y=num)) + geom_bar(stat="identity") + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+              plot.caption = element_text(vjust = 1), 
+              axis.line = element_line(colour = "gray59", 
+                                       linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
+              panel.grid.major = element_line(colour = "gray77"), 
+              panel.grid.minor = element_line(colour = NA, 
+                                              linetype = "blank"), axis.title = element_text(size = 12), 
+              axis.text = element_text(size = 12, vjust = 0.4), 
+              axis.text.x = element_text(size = 12), 
+              axis.text.y = element_text(size = 12), 
+              plot.title = element_text(size = 15, 
+                                        hjust = 0.5), panel.background = element_rect(fill = NA)) +
+        labs(title = "Number of apps installed per category", 
+             x = "Category", y = "Number of apps")
+    }
+    # most frequent words in apps
+    else if (input$radioInputPlots == 3) {
+      occurences <- function(d) {
+        allWords = c("")
+        for (e in d) {
+          split = str_split(e, " ")[[1]]
+          allWords = combine(allWords, split)
+        }
+        # get a pair of word - num_of_occurrences and put it in a dataframe
+        df = as.data.frame(table(allWords))
+        colnames(df) = c("Word", "Freq")
+        return(df %>% arrange(desc(Freq)))
+      }
+      occurences(data$App2)
+      d = occurences(data$App2) %>% top_n(200)
+      wordcloud::wordcloud(words = d$Word, freq = d$Freq, min.freq = 1,
+                           max.words=300, random.order=FALSE, rot.per=0.0, 
+                           colors=brewer.pal(8, "Set1"))
+    }
+    # number of apps installed per category
+    else if (input$radioInputPlots == 4) {
+      d = data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
+      ggplot(d, aes(x=`Content Rating`, y=num)) + geom_bar(stat="identity") + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+              plot.caption = element_text(vjust = 1), 
+              axis.line = element_line(colour = "gray59", 
+                                       linetype = "solid"), axis.ticks = element_line(colour = "gray15"), 
+              panel.grid.major = element_line(colour = "gray77"), 
+              panel.grid.minor = element_line(colour = NA, 
+                                              linetype = "blank"), axis.title = element_text(size = 12), 
+              axis.text = element_text(size = 12, vjust = 0.4), 
+              axis.text.x = element_text(size = 12), 
+              axis.text.y = element_text(size = 12), 
+              plot.title = element_text(size = 15, 
+                                        hjust = 0.5), panel.background = element_rect(fill = NA)) +
+        labs(title = "Number of apps installed per category", 
+             x = "Category", y = "Number of apps")
+    }
+    # prices and categories, 2 graphs side by side
+    else if (input$radioInputPlots == 5) {
+      priceRange <- function(d) {
+        if (d == 0) return(0)
+        else {
+          prices = c(0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 20, 300, 350)
+          
+          for (p in prices) if (d < p) return(p)
+          return(400)
+        }
+      }
+      r = data %>% select(ePrice) %>% rowwise() %>% mutate("Price2"=priceRange(ePrice)) %>% arrange(desc(Price2))
+      r = r %>% select(Price2) %>% group_by(Price2) %>% summarise("num"=n()) %>% arrange(num)
+      r = r[r$Price2 != 0, ]
+      
+      g1 = ggplot(r, aes(x=Price2, y=num)) + geom_bar(stat="identity", width=5) + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+        plot.caption = element_text(vjust = 1), 
+        panel.grid.major = element_line(colour = "gray47"), 
+        panel.grid.minor = element_line(colour = "gray80", 
+                                        linetype = "blank"), axis.title = element_text(size = 15), 
+        axis.text = element_text(size = 14), 
+        axis.text.x = element_text(size = 14), 
+        plot.title = element_text(size = 14), 
+        panel.background = element_rect(fill = NA)) +labs(x = "Price group", y = "Number of apps")
+      
+      rr = data %>% select(ePrice) %>% rowwise() %>% mutate("Price2"=ifelse(ePrice==0, "Free", "Costs"))
+      rr = rr %>% group_by(Price2) %>% summarise("count"=n())
+      
+      g2 = ggplot(rr, aes(x=factor(Price2), y=count)) + geom_bar(stat="identity", width = 0.1) + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+              plot.caption = element_text(vjust = 1), 
+              panel.grid.major = element_line(colour = "gray47"), 
+              panel.grid.minor = element_line(colour = "gray80", 
+                                              linetype = "blank"), axis.title = element_text(size = 15), 
+              axis.text = element_text(size = 14), 
+              axis.text.x = element_text(size = 14), 
+              plot.title = element_text(size = 14), 
+              panel.background = element_rect(fill = NA)) +labs(x = "Price group", y = "Number of apps")
+      
+      gridExtra::grid.arrange(g2, g1, ncol=2)
+    }
+    # which category made most money
+    else if (input$radioInputPlots == 6) {
+      d = data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(Sales), "count"=n()) %>% arrange(desc(sum))
+      ggplot(d, aes(x=factor(Category), y=sum)) + geom_bar(stat="identity") + coord_flip() + theme(plot.subtitle = element_text(vjust = 1), 
+      plot.caption = element_text(vjust = 1), 
+      panel.grid.major = element_line(colour = "gray67"), 
+      panel.grid.minor = element_line(linetype = "blank"), 
+      axis.text.y = element_text(size = 8), 
+      panel.background = element_rect(fill = NA)) +labs(x = "Category", y = "Ammount of money")
+    }
+    # review length based on sentiment
+    else if (input$radioInputPlots == 7) {
+      rvs = rvs %>% mutate("Length"=nchar(Translated_Review))
+      d = rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise("avg"=mean(Length))
+      ggplot(d, aes(x=Sentiment, y=avg, fill=Sentiment)) +
+        geom_bar(stat="identity") +
+        scale_fill_manual(values=c("#CC0000", "#e0e0e0", "#00C851")) +
+        geom_hline(yintercept=mean(d$avg), col="blue") + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+              plot.caption = element_text(vjust = 1), 
+              panel.grid.major = element_line(colour = "gray83"), 
+              panel.grid.minor = element_line(colour = "snow3"), 
+              panel.background = element_rect(fill = NA)) +labs(y = "Average length")
+    }
+    # reviews and installs
+    else if (input$radioInputPlots == 8) {
+      d = joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% 
+        summarise("count"=n()) %>% arrange(desc(count))
+      
+      ggplot(data=d, aes(x=factor(Category), y=count, fill=Sentiment)) + 
+        geom_bar(stat="identity") + coord_flip() +
+        scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
+        ylab("Number of reviews") + xlab("Number of installs") + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+         plot.caption = element_text(vjust = 1), 
+         panel.grid.major = element_line(colour = "lavender"), 
+         panel.grid.minor = element_line(linetype = "blank"), 
+         axis.text = element_text(size = 11), 
+         axis.text.y = element_text(size = 9, 
+          vjust = 0.3), plot.title = element_text(size = 10, 
+          hjust = 0.5), legend.text = element_text(size = 12), 
+         legend.title = element_text(size = 13), 
+         panel.background = element_rect(fill = NA, 
+         linetype = "twodash"), legend.background = element_rect(fill = NA)) +labs(title = "Reviews and Installs")
+    }
+    # app name length based on installs
+    else if (input$radioInputPlots == 9) {
+      r = data %>% select(NameRangeLen, eInstalls) %>% group_by(eInstalls) %>% summarise("len"=mean(NameRangeLen)) %>% arrange(desc(eInstalls))
+      #r$eInstalls <- factor(r$eInstalls, levels = r$eInstalls[order(r$len, decreasing = TRUE)])
+      ggplot(r, aes(x=eInstalls, y=len, group=1)) + geom_line(colour="red", size=1.5) + geom_point(colour="black", size=1.5) + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+        plot.caption = element_text(vjust = 1), 
+        panel.grid.major = element_line(colour = "gray88", 
+        linetype = "blank"), panel.grid.minor = element_line(colour = "lightsteelblue"), 
+        axis.title = element_text(size = 13), 
+        plot.title = element_text(size = 15, 
+        hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "App name length and installs") + 
+        scale_x_continuous(labels = comma)+labs(x = "Number of installs", y = "Length of name")
+    }
+    # installs and app name length boxplot
+    else if (input$radioInputPlots == 10) {
+      ggplot(data, aes(x=factor(eInstalls), y=NameRangeLen)) + 
+        geom_boxplot(fill='#56B4E9', color="black") + coord_flip() + 
+        theme(plot.subtitle = element_text(vjust = 1), 
+        plot.caption = element_text(vjust = 1), 
+        panel.grid.major = element_line(colour = "gray75"), 
+        axis.title = element_text(size = 12), 
+        axis.text.x = element_text(size = 12, 
+        vjust = 0), axis.text.y = element_text(vjust = 0.4), 
+        plot.title = element_text(size = 14, 
+        hjust = 0.5), panel.background = element_rect(fill = NA)) +labs(title = "Number of installs and app name length", 
+        x = "Number of installs", y = "Length of app name")
+    }
+    # installs and average price
+    else if (input$radioInputPlots == 11) {
+      # see how price and installs correlate
+      d1 = data %>% select(eInstalls, ePrice) %>% group_by(eInstalls) %>% summarise(avg=mean(ePrice)) %>% arrange(desc(eInstalls))
+      ggplot(d1, aes(x=factor(eInstalls), y=avg, fill=avg)) + geom_bar(stat="identity") + coord_flip()
+    }
+    # average prices based on categories
+    else if (input$radioInputPlots == 12) {
+      d1 = data %>% select(Category, ePrice) %>% group_by(Category) %>% summarise(avg=mean(ePrice)) %>% arrange(desc(avg))
+      ggplot(d1, aes(y=avg, x=Category)) + 
+        geom_bar(stat="identity") +
+        geom_hline(yintercept=mean(d1$avg), col="red") + 
+        geom_text(aes(-1,1,label = 1.8, vjust = -1)) +
+        coord_flip() +
+        ggtitle("Price by Category") + 
+        ylab("Average Price") + xlab("Category")
+    }
+    # reviews based on number of installs
+    else if (input$radioInputPlots == 13) {
+      d2 = joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
+      ggplot(data=d2, aes(x=factor(eInstalls), y=sum, fill=Sentiment)) + 
+        geom_bar(stat="identity") +
+        scale_fill_manual("legend", values=c("Positive"="#00C851", "Neutral"="#e0e0e0", "Negative" = "#CC0000")) +
+        ylab("Number of reviews") + xlab("Number of installs") + theme(plot.subtitle = element_text(vjust = 1), 
+        plot.caption = element_text(vjust = 1), 
+        panel.grid.major = element_line(colour = "gray80"), 
+        panel.background = element_rect(fill = NA))
+      
+    }
+    # 
+    else if (input$radioInputPlots == 14) {
+      
+    }
+    # 
+    else if (input$radioInputPlots == 15) {
+      
+    }
+    
+   
   })
+
+
+
+  
+  
+  
+  
+  
+  
+  # !!!!
+  # put in another tabs for printing tables
+  output$someTables <- DT::renderDataTable({
+    if (input$radioInputPlots == 1) {
+      # see which apps made most money
+      data %>% select(App, Sales) %>% group_by(App) %>% 
+        summarise("Sales"=max(Sales), "SalesOut"=formatC(Sales, format="f", big.mark=",", digits=0)) %>% 
+        arrange(desc(Sales))
+    }
+    # most expensive apps
+    else if (input$radioInputPlots == 2) {
+      data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
+    }
+    # apps that made most money
+    else if (input$radioInputPlots == 3) {
+      data %>% select(App, Sales) %>% group_by(App) %>% 
+        summarise("Sales"=max(Sales), "SalesOut"=formatC(Sales, format="f", big.mark=",", digits=0)) %>% 
+        arrange(desc(Sales))
+    }
+  })
+  
+  
+  
   
 
 }

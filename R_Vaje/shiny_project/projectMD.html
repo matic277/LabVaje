@@ -209,9 +209,11 @@ print(cols)</code></pre>
 <div id="sample" class="section level4">
 <h4>Sample</h4>
 <pre class="r"><code>tibble::as.tibble(rdata)</code></pre>
+<pre><code>## Warning: `as.tibble()` is deprecated, use `as_tibble()` (but mind the new semantics).
+## This warning is displayed once per session.</code></pre>
 <pre><code>## # A tibble: 10,840 x 13
 ##    App   Category Rating Reviews Size  Installs Type  Price
-##  * &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;
+##    &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;
 ##  1 Phot~ ART_AND~    4.1     159 19M   10,000+  Free  0    
 ##  2 Colo~ ART_AND~    3.9     967 14M   500,000+ Free  0    
 ##  3 U La~ ART_AND~    4.7   87510 8.7M  5,000,0~ Free  0    
@@ -240,7 +242,7 @@ print(cols)</code></pre>
 <pre class="r"><code>tibble::as.tibble(rrvs)</code></pre>
 <pre><code>## # A tibble: 64,295 x 5
 ##    App     Translated_Review    Sentiment Sentiment_Polar~ Sentiment_Subje~
-##  * &lt;chr&gt;   &lt;chr&gt;                &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt;
+##    &lt;chr&gt;   &lt;chr&gt;                &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt;
 ##  1 10 Bes~ &quot;I like eat delicio~ Positive              1               0.533
 ##  2 10 Bes~ This help eating he~ Positive              0.25            0.288
 ##  3 10 Bes~ nan                  nan                 NaN             NaN    
@@ -282,16 +284,16 @@ tibble::as.tibble( sample_n(data %&gt;% select(Price, ePrice), 10))</code></pre>
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 2
 ##    Price ePrice
-##  * &lt;chr&gt;  &lt;dbl&gt;
+##    &lt;chr&gt;  &lt;dbl&gt;
 ##  1 0       0   
-##  2 $7.99   7.99
+##  2 0       0   
 ##  3 0       0   
 ##  4 0       0   
-##  5 $3.99   3.99
+##  5 0       0   
 ##  6 0       0   
 ##  7 0       0   
 ##  8 0       0   
-##  9 0       0   
+##  9 $2.99   2.99
 ## 10 0       0</code></pre>
 </div>
 </div>
@@ -329,17 +331,17 @@ tibble::as.tibble( sample_n(data %&gt;% select(Price, ePrice), 10))</code></pre>
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 2
 ##    Price ePrice
-##  * &lt;chr&gt;  &lt;dbl&gt;
-##  1 0       0   
-##  2 0       0   
-##  3 $2.99   2.99
-##  4 0       0   
-##  5 $0.99   0.99
-##  6 0       0   
-##  7 0       0   
-##  8 0       0   
-##  9 0       0   
-## 10 0       0</code></pre>
+##    &lt;chr&gt;  &lt;dbl&gt;
+##  1 0          0
+##  2 0          0
+##  3 0          0
+##  4 0          0
+##  5 0          0
+##  6 0          0
+##  7 0          0
+##  8 0          0
+##  9 0          0
+## 10 0          0</code></pre>
 </div>
 </div>
 <div id="column-app" class="section level3">
@@ -363,18 +365,18 @@ tibble::as.tibble( sample_n(data %&gt;% select(App, App2), 10))</code></pre>
 <div id="result-2" class="section level5">
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 2
-##    App                                             App2                  
-##  * &lt;chr&gt;                                           &lt;chr&gt;                 
-##  1 Lego Ninjago Wallpaper                          Lego Ninjago Wallpaper
-##  2 &quot;Painel EJ SSH - INTERNET GRĂ\u0081TIS&quot;         Painel EJ SSH         
-##  3 FollowMyHealthÂ®                                FollowMyHealthÂ®      
-##  4 view.com.au - Buy, Rent or Research Real Estate view.com.au           
-##  5 Google Keep                                     Google Keep           
-##  6 Etihad Airways                                  Etihad Airways        
-##  7 Thomas &amp; Friends: Go Go Thomas                  Thomas &amp; Friends      
-##  8 AE Order                                        AE Order              
-##  9 FunnyPixels - Color by number Sandbox           FunnyPixels           
-## 10 Dictionary                                      Dictionary</code></pre>
+##    App                            App2                          
+##    &lt;chr&gt;                          &lt;chr&gt;                         
+##  1 Archie Comics                  Archie Comics                 
+##  2 Snowboard Racing Free Fun Game Snowboard Racing Free Fun Game
+##  3 Differential Equations Steps   Differential Equations Steps  
+##  4 Meme Generator                 Meme Generator                
+##  5 DV 2019 - EDV Photo &amp; Form     DV 2019                       
+##  6 AQ: First Contact              AQ                            
+##  7 Granny                         Granny                        
+##  8 du app                         du app                        
+##  9 Ingress                        Ingress                       
+## 10 BT Camera                      BT Camera</code></pre>
 </div>
 </div>
 <div id="column-sales" class="section level3">
@@ -389,18 +391,18 @@ tibble::as.tibble( sample_n(data %&gt;% select(App2, ePrice, eInstalls, Sales), 
 <div id="result-3" class="section level5">
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 4
-##    App2                      ePrice eInstalls Sales
-##  * &lt;chr&gt;                      &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
-##  1 To-Do Calendar Planner      0      1000000     0
-##  2 Memory Helper               0       500000     0
-##  3 AC Remote For LG            0       100000     0
-##  4 Public Service CU Mobile    0        10000     0
-##  5 Apex Launcher               0     10000000     0
-##  6 Be My Princess              0       100000     0
-##  7 Download Manager Pro FREE   0       100000     0
-##  8 Fortune Quest               0        10000     0
-##  9 SK Enca Direct Malls        0       500000     0
-## 10 Stand Oâ€™FoodÂ®            1.99     10000 19900</code></pre>
+##    App2                                       ePrice eInstalls Sales
+##    &lt;chr&gt;                                       &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
+##  1 G-SHOCK+                                      0      100000    0 
+##  2 Number Therapy                               15.0        50  750.
+##  3 AT&amp;T Navigator                                0    10000000    0 
+##  4 CX-17WIFI                                     0       10000    0 
+##  5 Dance On Mobile                               0     1000000    0 
+##  6 Bus Driver 3D                                 0     5000000    0 
+##  7 Air conditioner remote control                0     1000000    0 
+##  8 INTERACTIVE CALCULUS FOR MATHS AND PHYSICS    0        1000    0 
+##  9 Dresses Ideas &amp; Fashions +3000                0      100000    0 
+## 10 Fashion Pony Girls Dress Up Makeup Game       0       10000    0</code></pre>
 </div>
 </div>
 <div id="column-size" class="section level3">
@@ -432,18 +434,18 @@ tibble::as.tibble( sample_n(data %&gt;% select(Size, eSize), 10))</code></pre>
 <div id="result-4" class="section level5">
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 2
-##    Size                eSize
-##  * &lt;chr&gt;               &lt;dbl&gt;
-##  1 19M                  19  
-##  2 853k                853  
-##  3 77M                  77  
-##  4 7.0M                  7  
-##  5 63M                  63  
-##  6 8.2M                  8.2
-##  7 9.9M                  9.9
-##  8 6.3M                  6.3
-##  9 3.6M                  3.6
-## 10 Varies with device   -1</code></pre>
+##    Size               eSize
+##    &lt;chr&gt;              &lt;dbl&gt;
+##  1 47M                 47  
+##  2 3.3M                 3.3
+##  3 33M                 33  
+##  4 92M                 92  
+##  5 Varies with device  -1  
+##  6 28M                 28  
+##  7 12M                 12  
+##  8 32M                 32  
+##  9 6.4M                 6.4
+## 10 Varies with device  -1</code></pre>
 </div>
 </div>
 </div>
@@ -796,23 +798,20 @@ data %&gt;% select(App2, eInstalls) %&gt;% group_by(eInstalls) %&gt;% summarise(
 ## 20 1000000000 &quot; Google  Messenger  Subway  Surfers&quot;</code></pre>
 </div>
 </div>
-<div id="section-1" class="section level3">
-<h3></h3>
-<div id="implementation-18" class="section level5">
-<h5>Implementation:</h5>
-</div>
-<div id="result-24" class="section level5">
-<h5>Result:</h5>
-</div>
-</div>
-<div id="section-2" class="section level3">
-<h3></h3>
-<div id="implementation-19" class="section level5">
-<h5>Implementation:</h5>
-</div>
-<div id="result-25" class="section level5">
-<h5>Result:</h5>
-</div>
+<div id="price-range" class="section level3">
+<h3>Price range</h3>
+<p>Adding a new column based on price range. We make up a few sensible price ranges in which we will categorise apps based on their price. Usefull when drawing graphs beucase there are too many different prices. ##### Implementation:</p>
+<pre class="r"><code>priceRange &lt;- function(d) {
+  if (d == 0) return(0)
+  else {
+    prices = c(0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 20, 300, 350)
+
+    for (p in prices) if (d &lt; p) return(p)
+    return(400)
+  }
+}
+
+data %&gt;% select(ePrice) %&gt;% rowwise() %&gt;% mutate(&quot;Price2&quot;=priceRange(ePrice))</code></pre>
 </div>
 </div>
 </div>

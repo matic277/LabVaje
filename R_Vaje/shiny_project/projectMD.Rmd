@@ -16,7 +16,7 @@ library("stringi")
 library("stringr")
 library("lazyeval")
 
-sourceDir = "C:/git/LabVaje/R_Vaje/shiny_project/data_resources/"
+sourceDir = "C:/git/SQL-R/LabVaje/R_Vaje/shiny_project/data_resources/"
 
 RawDataPath = paste(sourceDir, "googleplaystore.csv", sep="")
 RawReviewsPath = paste(sourceDir, "googleplaystore_user_reviews.csv", sep="")
@@ -59,7 +59,7 @@ print(cols)
 ```
 #### Sample
 ```{r}
-tibble::as.tibble(rdata)
+tibble::as_tibble(rdata)
 ```
 
 ### googleplaystore_user_reviews.csv file
@@ -213,13 +213,13 @@ tibble::as.tibble( sample_n(data %>% select(Size, eSize), 10))
 
 ## googleplaystore_user_reviews.csv file
 ### Removing rows with bad values
-Some rows have a lot of NA or NaN values in columns '*Sentiment*' and '*Translated_Review*', we need to remove those.
+Some rows have a lot of NA or NaN values in columns '*Sentiment*' and '*Translated_Review*', we need to remove those.  
 ##### Implementation:
 ```{r eval=FALSE}
-# rvs = rvs %>% filter(!(Sentiment=="nan" | Translated_Review=="nan"))
+rvs = rvs %>% filter(!(Sentiment=="nan" | Translated_Review=="nan"))
 ```
 ##### Result:
-We go from 64,295 to 37,432 reviews, losing about half of them.
+We go from 64,295 to 37,432 reviews, losing about half of reviews.
 
 
 ### Getting length of review
@@ -234,7 +234,7 @@ tibble::as.tibble( sample_n(rvs %>% select(Translated_Review, Length), 10))
 ```
 ##### Result:
 ```{r echo=FALSE}
-# tibble::as.tibble( sample_n(rvs %>% select(Translated_Review, Length), 10))
+tibble::as.tibble( sample_n(rvs %>% select(Translated_Review, Length), 10))
 ```
 
 # Data analysis
@@ -256,13 +256,13 @@ tibble::as.tibble(r)
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
-# data = data %>% rowwise() %>% mutate("NameLengthApp2"=nchar(App2), "NameLengthApp"=nchar(App))
-# 
-# r = data %>% select(NameLengthApp2, eInstalls) %>% group_by(eInstalls) %>% summarise("sum"=mean(NameLengthApp2)) %>% arrange(desc(eInstalls))
-# tibble::as.tibble(r)
-# 
-# r = data %>% select(NameLengthApp, eInstalls) %>% group_by(eInstalls) %>% summarise("sum"=mean(NameLengthApp)) %>% arrange(desc(eInstalls))
-# tibble::as.tibble(r)
+data = data %>% rowwise() %>% mutate("NameLengthApp2"=nchar(App2), "NameLengthApp"=nchar(App))
+
+r = data %>% select(NameLengthApp2, eInstalls) %>% group_by(eInstalls) %>% summarise("sum"=mean(NameLengthApp2)) %>% arrange(desc(eInstalls))
+tibble::as.tibble(r)
+
+r = data %>% select(NameLengthApp, eInstalls) %>% group_by(eInstalls) %>% summarise("sum"=mean(NameLengthApp)) %>% arrange(desc(eInstalls))
+tibble::as.tibble(r)
 ```
 
 ### Most popular applications based on genre
@@ -276,34 +276,33 @@ Some apps will be counted twice.
 
 ```{r warning=FALSE}
 # select only those that have multiple (two) genres
-# extra = data %>% filter(grepl(";", Genres))
-# extra
+extra = data %>% filter(grepl(";", Genres))
 
 # create new columns, extra1 and extra2
 # now each app in this dataframe has two genres
-# extra = extra %>% rowwise() %>% mutate(Genres1=strsplit(Genres, ";")[[1]][1], Genres2=strsplit(Genres, ";")[[1]][2])
+extra = extra %>% rowwise() %>% mutate(Genres1=strsplit(Genres, ";")[[1]][1], Genres2=strsplit(Genres, ";")[[1]][2])
 
 # !do not uncomment! : extra1 %>% select(Genres1, Genres2) %>% group_by(Genres1) %>% summarise(max(Genres2)) %>% arrange(desc(Genres1))
 
 # two new dataframes
 # genre1 has apps that contain only the extra Genre1 column, similar for genre2
-# genre1 = extra[ , !names(extra) %in% c("Genres2", "Genres")]
-# genre2 = extra[ , !names(extra) %in% c("Genres1", "Genres")]
+genre1 = extra[ , !names(extra) %in% c("Genres2", "Genres")]
+genre2 = extra[ , !names(extra) %in% c("Genres1", "Genres")]
 
 # combining data and genres dataframe
 # from original data, select only apps that dont have multiple (two) genres
 # then combine that with genre1 and genre2
 # ! before combining, rename the columns in genre1 and genre2:; Genres(1/2) -> Genres
-# colnames(genre1)[colnames(genre1)=="Genres1"] <- "Genres"
-# colnames(genre2)[colnames(genre2)=="Genres2"] <- "Genres"
+colnames(genre1)[colnames(genre1)=="Genres1"] <- "Genres"
+colnames(genre2)[colnames(genre2)=="Genres2"] <- "Genres"
 
-# single = data %>% filter(!grepl(";", Genres))
+single = data %>% filter(!grepl(";", Genres))
 
-# combined = rbind(single, genre1, genre2)
+combined = rbind(single, genre1, genre2)
 
 # RESULT
-# r = combined %>% select(Genres, eInstalls) %>% group_by(Genres) %>% summarise("sum"=sum(eInstalls)) %>% arrange(desc(sum))
-# tibble::as.tibble(r)
+r = combined %>% select(Genres, eInstalls) %>% group_by(Genres) %>% summarise("sum"=sum(eInstalls)) %>% arrange(desc(sum))
+tibble::as.tibble(r)
 ```
 
 
@@ -317,8 +316,8 @@ r %>% select(RatingGroup, Reviews, eInstalls) %>% group_by(RatingGroup) %>% na.o
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
-# r = data %>% rowwise() %>% mutate("RatingGroup"=round(Rating))
-# r %>% select(RatingGroup, Reviews, eInstalls) %>% group_by(RatingGroup) %>% na.omit() %>% summarise("sum"=sum(as.numeric(Reviews)), "avg"=mean(eInstalls)) %>% arrange(desc(RatingGroup))
+r = data %>% rowwise() %>% mutate("RatingGroup"=round(Rating))
+r %>% select(RatingGroup, Reviews, eInstalls) %>% group_by(RatingGroup) %>% na.omit() %>% summarise("sum"=sum(as.numeric(Reviews)), "avg"=mean(eInstalls)) %>% arrange(desc(RatingGroup))
 ```
 
 
@@ -329,7 +328,7 @@ data %>% select(Category, Reviews) %>% group_by(Category) %>% summarise("sum"=su
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
-# data %>% select(Category, Reviews) %>% group_by(Category) %>% summarise("sum"=sum(Reviews)) %>% arrange(desc(sum))
+data %>% select(Category, Reviews) %>% group_by(Category) %>% summarise("sum"=sum(Reviews)) %>% arrange(desc(sum))
 ```
 
 
@@ -355,17 +354,17 @@ data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise(getTop_n(
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
-# n = 5
-# getTop_n <- function(d, n) {
-#   str = ""
-#   for (e in d) {
-#     str = paste(str, e, sep=", ")
-#     n = n - 1
-#     if (n == 0) break
-#   }
-#   return(str)
-# }
-# data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise(getTop_n(App2, n)) %>% arrange(desc(eInstalls))
+n = 5
+getTop_n <- function(d, n) {
+  str = ""
+  for (e in d) {
+    str = paste(str, e, sep=", ")
+    n = n - 1
+    if (n == 0) break
+  }
+  return(str)
+}
+data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise(getTop_n(App2, n)) %>% arrange(desc(eInstalls))
 ```
 
 
@@ -377,8 +376,7 @@ data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% 
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
-# count how many apps there are per group of installs
-# data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
+data %>% select(eInstalls) %>% group_by(eInstalls) %>% summarise("num"=n()) %>% arrange(desc(eInstalls))
 ```
 
 
@@ -391,7 +389,7 @@ data %>% select(`Content Rating`, eInstalls) %>%
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
-# data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
+data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% summarise("num"=n()) %>% arrange(desc(num))
 ```
 
 
@@ -404,8 +402,8 @@ data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
-# data %>% select(Price) %>% group_by(Price) %>% summarise("num"=n()) %>% arrange(desc(num))
-# data %>% select(App, App2, ePrice, Installs) %>% filter(ePrice>300)
+data %>% select(Price) %>% group_by(Price) %>% summarise("num"=n()) %>% arrange(desc(num))
+data %>% select(App, App2, ePrice, Installs) %>% filter(ePrice>300)
 ```
 
 
@@ -419,7 +417,7 @@ data %>% select(App, App2, Sales) %>% rowwise() %>%
 ```
 ##### Result:
 ```{r echo=FALSE}
-# data %>% select(App, App2, Sales) %>% rowwise() %>% mutate("SalesOut"=formatC(Sales, format="f", big.mark=",", digits=1)) %>% arrange(desc(Sales))
+data %>% select(App, App2, Sales) %>% rowwise() %>% mutate("SalesOut"=formatC(Sales, format="f", big.mark=",", digits=1)) %>% arrange(desc(Sales))
 ```
 
 
@@ -432,7 +430,7 @@ data %>% select(Category, Sales) %>% group_by(Category) %>%
 ```
 ##### Result:
 ```{r echo=FALSE}
-# data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(Sales), "count"=n()) %>% arrange(desc(sum))
+data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(Sales), "count"=n()) %>% arrange(desc(sum))
 ```
 
 
@@ -459,19 +457,19 @@ occurences(data$App) %>% top_n(20)
 ```
 ##### Result:
 ```{r echo=FALSE}
-# occurences <- function(d) {
-#   allWords = c("")
-#   for (e in d) {
-#     split = str_split(e, " ")[[1]]
-#     allWords = combine(allWords, split)
-#   }
-#   # get a pair of word - num_of_occurrences and put it in a dataframe
-#   df = as.data.frame(table(allWords))
-#   colnames(df) = c("Word", "Freq")
-#   return(df %>% arrange(desc(Freq)))
-# }
-# occurences(data$App2) %>% top_n(20)
-# occurences(data$App) %>% top_n(20)
+occurences <- function(d) {
+  allWords = c("")
+  for (e in d) {
+    split = str_split(e, " ")[[1]]
+    allWords = combine(allWords, split)
+  }
+  # get a pair of word - num_of_occurrences and put it in a dataframe
+  df = as.data.frame(table(allWords))
+  colnames(df) = c("Word", "Freq")
+  return(df %>% arrange(desc(Freq)))
+}
+occurences(data$App2) %>% top_n(20)
+occurences(data$App) %>% top_n(20)
 ```
 
 
@@ -498,32 +496,32 @@ posFreq %>% top_n(50)
 ```
 ##### Result:
 ```{r echo=FALSE}
-# rvs = rio::import(file=ProcessedReviewsPath, format="csv")
-# neg = rvs %>% filter(Sentiment=="Negative") %>% select(Sentiment, Translated_Review, App)
-# neu = rvs %>% filter(Sentiment=="Neutral") %>% select(Sentiment, Translated_Review, App)
-# pos = rvs %>% filter(Sentiment=="Positive") %>% select(Sentiment, Translated_Review, App)
-# 
-# occurences <- function(d) {
-#   allWords = c("")
-#   for (e in d) {
-#     split = str_split(e, " ")[[1]]
-#     allWords = combine(allWords, split)
-#   }
-#   # get a pair of word - num_of_occurrences and put it in a dataframe
-#   df = as.data.frame(table(allWords))
-#   colnames(df) = c("Word", "Freq")
-#   return(df %>% arrange(desc(Freq)))
-# }
-# 
-# negFreq = occurences(neg$Translated_Review)
-# print("Top 50 most used words in negative reviews:")
-# negFreq %>% top_n(50)
-# neuFreq = occurences(neu$Translated_Review)
-# print("Top 50 most used words in neutral reviews:")
-# neuFreq %>% top_n(50)
-# print("Top 50 most used words in positive reviews:")
-# posFreq = occurences(pos$Translated_Review)
-# posFreq %>% top_n(50)
+rvs = rio::import(file=ProcessedReviewsPath, format="csv")
+neg = rvs %>% filter(Sentiment=="Negative") %>% select(Sentiment, Translated_Review, App)
+neu = rvs %>% filter(Sentiment=="Neutral") %>% select(Sentiment, Translated_Review, App)
+pos = rvs %>% filter(Sentiment=="Positive") %>% select(Sentiment, Translated_Review, App)
+
+occurences <- function(d) {
+  allWords = c("")
+  for (e in d) {
+    split = str_split(e, " ")[[1]]
+    allWords = combine(allWords, split)
+  }
+  # get a pair of word - num_of_occurrences and put it in a dataframe
+  df = as.data.frame(table(allWords))
+  colnames(df) = c("Word", "Freq")
+  return(df %>% arrange(desc(Freq)))
+}
+
+negFreq = occurences(neg$Translated_Review)
+print("Top 50 most used words in negative reviews:")
+negFreq %>% top_n(50)
+neuFreq = occurences(neu$Translated_Review)
+print("Top 50 most used words in neutral reviews:")
+neuFreq %>% top_n(50)
+print("Top 50 most used words in positive reviews:")
+posFreq = occurences(pos$Translated_Review)
+posFreq %>% top_n(50)
 ```
 
 
@@ -535,7 +533,7 @@ rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise(mean(Len
 ```
 ##### Result:
 ```{r echo=FALSE}
-# rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise(mean(Length))
+rvs %>% select(Sentiment, Length) %>% group_by(Sentiment) %>% summarise(mean(Length))
 ```
 
 ## Joining data
@@ -556,7 +554,7 @@ joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>%
 ```
 ##### Result:
 ```{r echo=FALSE}
-# joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
+joined %>% select(eInstalls, Sentiment) %>% group_by(eInstalls, Sentiment) %>% summarise("sum"=n()) %>% arrange(desc(eInstalls))
 ```
 
 ### Reviews by category
@@ -569,7 +567,7 @@ joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>%
 ```
 ##### Result:
 ```{r echo=FALSE}
-# joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% summarise("count"=n()) %>% arrange(desc(count))
+joined %>% select(Category, Sentiment) %>% group_by(Category, Sentiment) %>% summarise("count"=n()) %>% arrange(desc(count))
 ```
 
 ### Getting apps by name
@@ -577,20 +575,21 @@ Function that gets a dataframe and returns apps that contain a word in their nam
 ##### Implementation:
 ```{r eval=FALSE}
 getAppsByName <- function(d, n) {
-  print(paste("Searching for apps that contain:", n, sep=" "))
-  return(d %>% filter(grepl(n, d$App)))
+  df = d %>% filter(grepl(n, d$App))
+  return(df)
 }
 
 getAppsByName(data, "Google")
 ```
 ##### Result:
 ```{r echo=FALSE}
-# getAppsByName <- function(d, n) {
-#   print(paste("Searching for apps that contain:", n, sep=" "))
-#   return(d %>% filter(grepl(n, d$App)))
-# }
-# df = getAppsByName(data, "Google")
-# tibble::as.tibble(df)
+getAppsByName <- function(d, n) {
+  #print(paste("Searching for apps that contain:", n, sep=" "))
+  df = d %>% filter(grepl(n, d$App))
+  return(df)
+}
+df = getAppsByName(data, "Google")
+tibble::as.tibble(df)
 ```
 
 ### Get apps that are in range of Rating
@@ -607,12 +606,12 @@ getAppsByRating(data, 4.4, 4.5)
 ```
 ##### Result:
 ```{r echo=FALSE}
-# getAppsByRating <- function(d, n1, n2) {
-#   print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
-#   return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
-# }
-# df = getAppsByRating(data, 4.4, 4.5)
-# tibble::as.tibble(df)
+getAppsByRating <- function(d, n1, n2) {
+  print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
+  return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
+}
+df = getAppsByRating(data, 4.4, 4.5)
+tibble::as.tibble(df)
 ```
 
 ### Most frequemnt words in app names based on installs
@@ -674,15 +673,22 @@ data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>%
 ```
 
 
-Template
-### 
 
+### Price range
+Adding a new column based on price range. We make up a few sensible price ranges in which we will categorise apps based on their price. Usefull when drawing graphs beucase there are too many different prices.
 ##### Implementation:
 ```{r eval=FALSE}
+priceRange <- function(d) {
+  if (d == 0) return(0)
+  else {
+    prices = c(0.5, 1, 1.5, 2, 2.5, 3, 4, 5, 10, 20, 300, 350)
 
-```
-##### Result:
-```{r echo=FALSE}
+    for (p in prices) if (d < p) return(p)
+    return(400)
+  }
+}
 
+data %>% select(ePrice) %>% rowwise() %>% mutate("Price2"=priceRange(ePrice))
 ```
+
 
