@@ -20,3 +20,47 @@ tibble::as_tibble(data)
 colnames(data)
 #------------------------------------------------------------------
 
+# most frequent words per category (and maybe installs aswell?)
+
+# IDEA !!! +++
+# get most frequent words in apps grouped by installs
+
+selectTopNWords <- function(d, n) {
+  output = ""
+  words = d %>% top_n(n) %>% select(Word)
+  i = 0
+  for (w in words) {
+    output = paste(output, w, collapse=" ")
+    i = i + 1
+    if (i==n) break;
+  }
+  return(output)
+}
+
+occurences <- function(d) {
+  allWords = ""
+  for (e in d) {
+    split = str_split(e, " ")[[1]]
+    allWords = paste(allWords, paste(split, collapse=" "))
+  }
+  # get a pair of word - num_of_occurrences and put it in a dataframe
+  df = as.data.frame(table(allWords))
+  colnames(df) = c("Word", "Freq")
+  #print(class(df))
+  return(df %>% arrange(desc(Freq)))
+}
+
+r = data %>% select(App, eInstalls, Category) %>% 
+  group_by(Category, eInstalls) %>% 
+  summarise("TopWords"=selectTopNWords(occurences(App), 3)) %>%
+  arrange(Category, desc(eInstalls))
+
+
+print(r, n=500)
+
+
+
+
+
+
+

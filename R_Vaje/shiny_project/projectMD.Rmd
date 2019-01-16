@@ -575,21 +575,20 @@ Function that gets a dataframe and returns apps that contain a word in their nam
 ##### Implementation:
 ```{r eval=FALSE}
 getAppsByName <- function(d, n) {
-  df = d %>% filter(grepl(n, d$App))
-  return(df)
+  return(d %>% filter(grepl(n, d$App)))
 }
 
 getAppsByName(data, "Google")
 ```
-##### Result:
+
 ```{r echo=FALSE}
-getAppsByName <- function(d, n) {
-  #print(paste("Searching for apps that contain:", n, sep=" "))
-  df = d %>% filter(grepl(n, d$App))
-  return(df)
-}
-df = getAppsByName(data, "Google")
-tibble::as.tibble(df)
+# getAppsByName <- function(d, n) {
+#   #print(paste("Searching for apps that contain:", n, sep=" "))
+#   df = d %>% filter(grepl(n, d$App))
+#   return(df)
+# }
+# df = getAppsByName(data, "Google")
+# tibble::as.tibble(df)
 ```
 
 ### Get apps that are in range of Rating
@@ -604,14 +603,14 @@ getAppsByRating <- function(d, n1, n2) {
 
 getAppsByRating(data, 4.4, 4.5)
 ```
-##### Result:
+
 ```{r echo=FALSE}
-getAppsByRating <- function(d, n1, n2) {
-  print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
-  return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
-}
-df = getAppsByRating(data, 4.4, 4.5)
-tibble::as.tibble(df)
+# getAppsByRating <- function(d, n1, n2) {
+#   print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
+#   return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
+# }
+# df = getAppsByRating(data, 4.4, 4.5)
+# tibble::as.tibble(df)
 ```
 
 ### Most frequemnt words in app names based on installs

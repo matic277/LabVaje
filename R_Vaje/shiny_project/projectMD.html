@@ -208,9 +208,7 @@ print(cols)</code></pre>
 </div>
 <div id="sample" class="section level4">
 <h4>Sample</h4>
-<pre class="r"><code>tibble::as.tibble(rdata)</code></pre>
-<pre><code>## Warning: `as.tibble()` is deprecated, use `as_tibble()` (but mind the new semantics).
-## This warning is displayed once per session.</code></pre>
+<pre class="r"><code>tibble::as_tibble(rdata)</code></pre>
 <pre><code>## # A tibble: 10,840 x 13
 ##    App   Category Rating Reviews Size  Installs Type  Price
 ##    &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;
@@ -240,6 +238,8 @@ print(cols)</code></pre>
 <div id="sample-1" class="section level4">
 <h4>Sample</h4>
 <pre class="r"><code>tibble::as.tibble(rrvs)</code></pre>
+<pre><code>## Warning: `as.tibble()` is deprecated, use `as_tibble()` (but mind the new semantics).
+## This warning is displayed once per session.</code></pre>
 <pre><code>## # A tibble: 64,295 x 5
 ##    App     Translated_Review    Sentiment Sentiment_Polar~ Sentiment_Subje~
 ##    &lt;chr&gt;   &lt;chr&gt;                &lt;chr&gt;                &lt;dbl&gt;            &lt;dbl&gt;
@@ -283,18 +283,18 @@ tibble::as.tibble( sample_n(data %&gt;% select(Price, ePrice), 10))</code></pre>
 <div id="result" class="section level5">
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 2
-##    Price ePrice
-##    &lt;chr&gt;  &lt;dbl&gt;
-##  1 0       0   
-##  2 0       0   
-##  3 0       0   
-##  4 0       0   
-##  5 0       0   
-##  6 0       0   
-##  7 0       0   
-##  8 0       0   
-##  9 $2.99   2.99
-## 10 0       0</code></pre>
+##    Price  ePrice
+##    &lt;chr&gt;   &lt;dbl&gt;
+##  1 0        0   
+##  2 0        0   
+##  3 $2.99    2.99
+##  4 0        0   
+##  5 0        0   
+##  6 $11.99  12.0 
+##  7 0        0   
+##  8 $1.49    1.49
+##  9 0        0   
+## 10 0        0</code></pre>
 </div>
 </div>
 <div id="column-installs" class="section level3">
@@ -365,18 +365,18 @@ tibble::as.tibble( sample_n(data %&gt;% select(App, App2), 10))</code></pre>
 <div id="result-2" class="section level5">
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 2
-##    App                            App2                          
-##    &lt;chr&gt;                          &lt;chr&gt;                         
-##  1 Archie Comics                  Archie Comics                 
-##  2 Snowboard Racing Free Fun Game Snowboard Racing Free Fun Game
-##  3 Differential Equations Steps   Differential Equations Steps  
-##  4 Meme Generator                 Meme Generator                
-##  5 DV 2019 - EDV Photo &amp; Form     DV 2019                       
-##  6 AQ: First Contact              AQ                            
-##  7 Granny                         Granny                        
-##  8 du app                         du app                        
-##  9 Ingress                        Ingress                       
-## 10 BT Camera                      BT Camera</code></pre>
+##    App                                    App2                             
+##    &lt;chr&gt;                                  &lt;chr&gt;                            
+##  1 Augment - 3D Augmented Reality         Augment                          
+##  2 AP Mobile                              AP Mobile                        
+##  3 Video Downloader for FB                Video Downloader for FB          
+##  4 DG ŕ¤—ŕĄŤŕ¤°ŕ¤ľŕ¤® / Digital Gram Pan~ DG ŕ¤—ŕĄŤŕ¤°ŕ¤ľŕ¤® / Digital Gra~
+##  5 BH by Kinomap                          BH by Kinomap                    
+##  6 Clock L                                Clock L                          
+##  7 EI App 2                               EI App 2                         
+##  8 I am Rich Premium Plus                 I am Rich Premium Plus           
+##  9 Ibotta: Cash Back Savings, Rewards &amp; ~ Ibotta                           
+## 10 Contents Provider(C.P.)Explorer        Contents Provider(C.P.)Explorer</code></pre>
 </div>
 </div>
 <div id="column-sales" class="section level3">
@@ -391,18 +391,18 @@ tibble::as.tibble( sample_n(data %&gt;% select(App2, ePrice, eInstalls, Sales), 
 <div id="result-3" class="section level5">
 <h5>Result:</h5>
 <pre><code>## # A tibble: 10 x 4
-##    App2                                       ePrice eInstalls Sales
-##    &lt;chr&gt;                                       &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
-##  1 G-SHOCK+                                      0      100000    0 
-##  2 Number Therapy                               15.0        50  750.
-##  3 AT&amp;T Navigator                                0    10000000    0 
-##  4 CX-17WIFI                                     0       10000    0 
-##  5 Dance On Mobile                               0     1000000    0 
-##  6 Bus Driver 3D                                 0     5000000    0 
-##  7 Air conditioner remote control                0     1000000    0 
-##  8 INTERACTIVE CALCULUS FOR MATHS AND PHYSICS    0        1000    0 
-##  9 Dresses Ideas &amp; Fashions +3000                0      100000    0 
-## 10 Fashion Pony Girls Dress Up Makeup Game       0       10000    0</code></pre>
+##    App2                             ePrice eInstalls Sales
+##    &lt;chr&gt;                             &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;
+##  1 X Home Bar                         1.99     10000 19900
+##  2 R Quick Reference Big Data         0         1000     0
+##  3 ESPN                               0     10000000     0
+##  4 Chest CT Sectional Walker          9.99       100   999
+##  5 Cut the Rope FULL FREE             0    100000000     0
+##  6 Leica Q                            0        10000     0
+##  7 TRANSFORMERS                       0     10000000     0
+##  8 High School Simulator 2017         0      5000000     0
+##  9 Chat AnĂłnimo Gratis EspaĂ±ol CG   0         5000     0
+## 10 Kenny e o Cupcake                  0            1     0</code></pre>
 </div>
 </div>
 <div id="column-size" class="section level3">
@@ -436,16 +436,16 @@ tibble::as.tibble( sample_n(data %&gt;% select(Size, eSize), 10))</code></pre>
 <pre><code>## # A tibble: 10 x 2
 ##    Size               eSize
 ##    &lt;chr&gt;              &lt;dbl&gt;
-##  1 47M                 47  
-##  2 3.3M                 3.3
-##  3 33M                 33  
-##  4 92M                 92  
+##  1 18M                 18  
+##  2 45M                 45  
+##  3 7.7M                 7.7
+##  4 9.9M                 9.9
 ##  5 Varies with device  -1  
-##  6 28M                 28  
-##  7 12M                 12  
-##  8 32M                 32  
-##  9 6.4M                 6.4
-## 10 Varies with device  -1</code></pre>
+##  6 7.3M                 7.3
+##  7 6.6M                 6.6
+##  8 1.4M                 1.4
+##  9 25M                 25  
+## 10 11M                 11</code></pre>
 </div>
 </div>
 </div>
@@ -453,11 +453,12 @@ tibble::as.tibble( sample_n(data %&gt;% select(Size, eSize), 10))</code></pre>
 <h2>googleplaystore_user_reviews.csv file</h2>
 <div id="removing-rows-with-bad-values" class="section level3">
 <h3>Removing rows with bad values</h3>
-<p>Some rows have a lot of NA or NaN values in columns ‘<em>Sentiment</em>’ and ‘<em>Translated_Review</em>’, we need to remove those. ##### Implementation:</p>
-<pre class="r"><code># rvs = rvs %&gt;% filter(!(Sentiment==&quot;nan&quot; | Translated_Review==&quot;nan&quot;))</code></pre>
+<p>Some rows have a lot of NA or NaN values in columns ‘<em>Sentiment</em>’ and ‘<em>Translated_Review</em>’, we need to remove those.<br />
+##### Implementation:</p>
+<pre class="r"><code>rvs = rvs %&gt;% filter(!(Sentiment==&quot;nan&quot; | Translated_Review==&quot;nan&quot;))</code></pre>
 <div id="result-5" class="section level5">
 <h5>Result:</h5>
-<p>We go from 64,295 to 37,432 reviews, losing about half of them.</p>
+<p>We go from 64,295 to 37,432 reviews, losing about half of reviews.</p>
 </div>
 </div>
 <div id="getting-length-of-review" class="section level3">
@@ -470,6 +471,19 @@ rvs %&gt;% select(Sentiment, Length) %&gt;% group_by(Sentiment) %&gt;% summarise
 tibble::as.tibble( sample_n(rvs %&gt;% select(Translated_Review, Length), 10))</code></pre>
 <div id="result-6" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 10 x 2
+##    Translated_Review                                                 Length
+##    &lt;chr&gt;                                                              &lt;int&gt;
+##  1 Been using mfp long time. Presently 200 days row. Evidence shows~    157
+##  2 No sound .mkv Always loved simplicity player I've got ext.SD car~    105
+##  3 forced update, crashes constantly, absolutely usable                  52
+##  4 I fact love app! Genius!!!                                            26
+##  5 Crashes every time Latest update rubbish. Just get blank screen ~    143
+##  6 I really like far, complaint would long takes transfers bank Cur~    288
+##  7 Best launcher market!!!                                               23
+##  8 I enjoyed days apps. But things happen today, I can't see commen~     88
+##  9 I gave 3 stars OK. I like 1 notification text msg though.             57
+## 10 Educational. Very helpful                                             25</code></pre>
 </div>
 </div>
 </div>
@@ -492,6 +506,52 @@ r = data %&gt;% select(NameLengthApp, eInstalls) %&gt;% group_by(eInstalls) %&gt
 tibble::as.tibble(r)</code></pre>
 <div id="result-7" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 20 x 2
+##     eInstalls   sum
+##         &lt;dbl&gt; &lt;dbl&gt;
+##  1 1000000000  10.8
+##  2  500000000  12.2
+##  3  100000000  15.5
+##  4   50000000  15.4
+##  5   10000000  15.0
+##  6    5000000  16.3
+##  7    1000000  16.9
+##  8     500000  17.5
+##  9     100000  18.2
+## 10      50000  18.0
+## 11      10000  17.7
+## 12       5000  18.4
+## 13       1000  16.6
+## 14        500  17.2
+## 15        100  16.0
+## 16         50  14.6
+## 17         10  15.5
+## 18          5  15.8
+## 19          1  14.2
+## 20          0  19.6</code></pre>
+<pre><code>## # A tibble: 20 x 2
+##     eInstalls   sum
+##         &lt;dbl&gt; &lt;dbl&gt;
+##  1 1000000000  15.6
+##  2  500000000  18.0
+##  3  100000000  23.4
+##  4   50000000  23.5
+##  5   10000000  24.4
+##  6    5000000  24.8
+##  7    1000000  25.4
+##  8     500000  25.6
+##  9     100000  24.6
+## 10      50000  23.4
+## 11      10000  21.7
+## 12       5000  22.5
+## 13       1000  19.9
+## 14        500  19.6
+## 15        100  18.3
+## 16         50  17.0
+## 17         10  17.4
+## 18          5  16.7
+## 19          1  17.4
+## 20          0  21.1</code></pre>
 </div>
 </div>
 <div id="most-popular-applications-based-on-genre" class="section level3">
@@ -499,34 +559,47 @@ tibble::as.tibble(r)</code></pre>
 <p>Some applications have (at most) two categories in the ‘<em>Genres</em>’ column.<br />
 We will separate the apps that have two Genres from those that have one. The apps with two genres will get two new columns, ‘<em>Genres1</em>’ and ‘<em>Genres2</em>’, both containing a single value of genre. Then we introduce two new dataframes, each contaning an app with only one genre. So an app is now separated and put in the dataframes, in each with one value of genre. In the end, we combine all three dataframes (two extra ones, and the original one without apps that have two genres). Some apps will be counted twice.</p>
 <pre class="r"><code># select only those that have multiple (two) genres
-# extra = data %&gt;% filter(grepl(&quot;;&quot;, Genres))
-# extra
+extra = data %&gt;% filter(grepl(&quot;;&quot;, Genres))
 
 # create new columns, extra1 and extra2
 # now each app in this dataframe has two genres
-# extra = extra %&gt;% rowwise() %&gt;% mutate(Genres1=strsplit(Genres, &quot;;&quot;)[[1]][1], Genres2=strsplit(Genres, &quot;;&quot;)[[1]][2])
+extra = extra %&gt;% rowwise() %&gt;% mutate(Genres1=strsplit(Genres, &quot;;&quot;)[[1]][1], Genres2=strsplit(Genres, &quot;;&quot;)[[1]][2])
 
 # !do not uncomment! : extra1 %&gt;% select(Genres1, Genres2) %&gt;% group_by(Genres1) %&gt;% summarise(max(Genres2)) %&gt;% arrange(desc(Genres1))
 
 # two new dataframes
 # genre1 has apps that contain only the extra Genre1 column, similar for genre2
-# genre1 = extra[ , !names(extra) %in% c(&quot;Genres2&quot;, &quot;Genres&quot;)]
-# genre2 = extra[ , !names(extra) %in% c(&quot;Genres1&quot;, &quot;Genres&quot;)]
+genre1 = extra[ , !names(extra) %in% c(&quot;Genres2&quot;, &quot;Genres&quot;)]
+genre2 = extra[ , !names(extra) %in% c(&quot;Genres1&quot;, &quot;Genres&quot;)]
 
 # combining data and genres dataframe
 # from original data, select only apps that dont have multiple (two) genres
 # then combine that with genre1 and genre2
 # ! before combining, rename the columns in genre1 and genre2:; Genres(1/2) -&gt; Genres
-# colnames(genre1)[colnames(genre1)==&quot;Genres1&quot;] &lt;- &quot;Genres&quot;
-# colnames(genre2)[colnames(genre2)==&quot;Genres2&quot;] &lt;- &quot;Genres&quot;
+colnames(genre1)[colnames(genre1)==&quot;Genres1&quot;] &lt;- &quot;Genres&quot;
+colnames(genre2)[colnames(genre2)==&quot;Genres2&quot;] &lt;- &quot;Genres&quot;
 
-# single = data %&gt;% filter(!grepl(&quot;;&quot;, Genres))
+single = data %&gt;% filter(!grepl(&quot;;&quot;, Genres))
 
-# combined = rbind(single, genre1, genre2)
+combined = rbind(single, genre1, genre2)
 
 # RESULT
-# r = combined %&gt;% select(Genres, eInstalls) %&gt;% group_by(Genres) %&gt;% summarise(&quot;sum&quot;=sum(eInstalls)) %&gt;% arrange(desc(sum))
-# tibble::as.tibble(r)</code></pre>
+r = combined %&gt;% select(Genres, eInstalls) %&gt;% group_by(Genres) %&gt;% summarise(&quot;sum&quot;=sum(eInstalls)) %&gt;% arrange(desc(sum))
+tibble::as.tibble(r)</code></pre>
+<pre><code>## # A tibble: 53 x 2
+##    Genres                   sum
+##    &lt;chr&gt;                  &lt;dbl&gt;
+##  1 Communication    32647776251
+##  2 Productivity     14176091369
+##  3 Social           14069867902
+##  4 Tools            11452771915
+##  5 Arcade           10793339156
+##  6 Casual           10465313740
+##  7 Photography      10088247655
+##  8 Action            9430059690
+##  9 News &amp; Magazines  7496317760
+## 10 Travel &amp; Local    6868887146
+## # ... with 43 more rows</code></pre>
 </div>
 <div id="see-how-rating-effects-reviews" class="section level3">
 <h3>See how Rating effects Reviews</h3>
@@ -538,6 +611,14 @@ r %&gt;% select(RatingGroup, Reviews, eInstalls) %&gt;% group_by(RatingGroup) %&
 </div>
 <div id="result-8" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 5 x 3
+##   RatingGroup        sum       avg
+##         &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;
+## 1           5 1013712542  8843959.
+## 2           4 3797386922 22375196.
+## 3           3    3435401   667472.
+## 4           2      55734    97095.
+## 5           1        170      658.</code></pre>
 </div>
 </div>
 <div id="number-of-reviews-based-on-category" class="section level3">
@@ -548,6 +629,20 @@ r %&gt;% select(RatingGroup, Reviews, eInstalls) %&gt;% group_by(RatingGroup) %&
 </div>
 <div id="result-9" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 33 x 2
+##    Category               sum
+##    &lt;chr&gt;                &lt;int&gt;
+##  1 GAME            1585422349
+##  2 COMMUNICATION    815462260
+##  3 SOCIAL           621241422
+##  4 FAMILY           410226330
+##  5 TOOLS            273185044
+##  6 PHOTOGRAPHY      213516650
+##  7 SHOPPING         115041222
+##  8 PRODUCTIVITY     114116975
+##  9 VIDEO_PLAYERS    110380188
+## 10 PERSONALIZATION   89346140
+## # ... with 23 more rows</code></pre>
 </div>
 </div>
 <div id="get-top-n-apps-based-on-installs" class="section level3">
@@ -571,6 +666,29 @@ data %&gt;% select(App2, eInstalls) %&gt;% group_by(eInstalls) %&gt;% summarise(
 </div>
 <div id="result-10" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 20 x 2
+##     eInstalls `getTop_n(App2, n)`                                          
+##         &lt;dbl&gt; &lt;chr&gt;                                                        
+##  1 1000000000 , Google Play Books, Messenger, WhatsApp Messenger, Google C~
+##  2  500000000 , Viber Messenger, imo free video calls and chat, Google Duo~
+##  3  100000000 , Wattpad đź“– Free Books, Amazon Kindle, OfficeSuite, Offic~
+##  4   50000000 , Sketch, Indeed Job Search, Docs To Goâ„˘ Free Office Suite~
+##  5   10000000 , Tattoo Name On My Photo Editor, ibis Paint X, Textgram, Ca~
+##  6    5000000 , U Launcher Lite, FlipaClip, Floor Plan Creator, Ulysse Spe~
+##  7    1000000 , Infinite Painter, Garden Coloring Book, Text on Photo, Nam~
+##  8     500000 , Coloring book moana, Photo Designer, Superheroes Wallpaper~
+##  9     100000 , Pixel Draw, Mandala Coloring Book, 3D Color Pixel by Numbe~
+## 10      50000 , Paper flowers instructions, Smoke Effect Photo Maker, HD M~
+## 11      10000 , Photo Editor &amp; Candy Camera &amp; Grid &amp; ScrapBook, Kids Paint~
+## 12       5000 , Learn To Draw Kawaii Characters, Makeup Videos, Eyeliner s~
+## 13       1000 , Hojiboy Tojiboyev Life Hacks, Calculator, Transenger, Free~
+## 14        500 , Cardi B Live Stream Video Chat, Live Chat, Meet With Stran~
+## 15        100 , Private Dating, Hide App- Blue for PrivacyHider, Ad Blocke~
+## 16         50 , Truth or Dare Pro, Dating White Girls, Geeks Dating, The D~
+## 17         10 , House party, Pet Lovers Dating, Latin Dating, Wifi Mingle,~
+## 18          5 , Diamond Engagement Rings, Tablet Reminder, Anatomy &amp; Physi~
+## 19          1 , Healthy Relationships Guide, PlusOne, Visualmed, Be the Ex~
+## 20          0 , Popsicle Launcher for Android P 9.0 launcher, Ak Parti Yar~</code></pre>
 </div>
 </div>
 <div id="how-many-apps-per-group-of-installs" class="section level3">
@@ -579,6 +697,29 @@ data %&gt;% select(App2, eInstalls) %&gt;% group_by(eInstalls) %&gt;% summarise(
 <pre class="r"><code>data %&gt;% select(eInstalls) %&gt;% group_by(eInstalls) %&gt;% summarise(&quot;num&quot;=n()) %&gt;% arrange(desc(eInstalls))</code></pre>
 <div id="result-11" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 20 x 2
+##     eInstalls   num
+##         &lt;dbl&gt; &lt;int&gt;
+##  1 1000000000    58
+##  2  500000000    72
+##  3  100000000   409
+##  4   50000000   289
+##  5   10000000  1252
+##  6    5000000   752
+##  7    1000000  1579
+##  8     500000   539
+##  9     100000  1169
+## 10      50000   479
+## 11      10000  1054
+## 12       5000   477
+## 13       1000   907
+## 14        500   330
+## 15        100   719
+## 16         50   205
+## 17         10   386
+## 18          5    82
+## 19          1    67
+## 20          0    14</code></pre>
 </div>
 </div>
 <div id="numer-of-apps-based-on-content-rating" class="section level3">
@@ -590,6 +731,15 @@ data %&gt;% select(App2, eInstalls) %&gt;% group_by(eInstalls) %&gt;% summarise(
 </div>
 <div id="result-12" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 6 x 2
+##   `Content Rating`   num
+##   &lt;chr&gt;            &lt;int&gt;
+## 1 Everyone          8714
+## 2 Teen              1208
+## 3 Mature 17+         499
+## 4 Everyone 10+       413
+## 5 Adults only 18+      3
+## 6 Unrated              2</code></pre>
 </div>
 </div>
 <div id="numer-of-installs-based-on-price" class="section level3">
@@ -601,6 +751,42 @@ data %&gt;% select(App, App2, ePrice, eInstalls) %&gt;% filter(ePrice&gt;300)</c
 </div>
 <div id="result-13" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 92 x 2
+##    Price   num
+##    &lt;chr&gt; &lt;int&gt;
+##  1 0     10039
+##  2 $0.99   148
+##  3 $2.99   129
+##  4 $1.99    73
+##  5 $4.99    72
+##  6 $3.99    63
+##  7 $1.49    46
+##  8 $5.99    30
+##  9 $2.49    26
+## 10 $9.99    21
+## # ... with 82 more rows</code></pre>
+<pre><code>## Source: local data frame [16 x 4]
+## Groups: &lt;by row&gt;
+## 
+## # A tibble: 16 x 4
+##    App                          App2                        ePrice Installs
+##    &lt;chr&gt;                        &lt;chr&gt;                        &lt;dbl&gt; &lt;chr&gt;   
+##  1 most expensive app (H)       most expensive app            400. 100+    
+##  2 đź’Ž I'm rich                đź’Ž I'm rich                 400. 10,000+ 
+##  3 I'm Rich - Trump Edition     I'm Rich                      400  10,000+ 
+##  4 I am rich                    I am rich                     400. 100,000+
+##  5 I am Rich Plus               I am Rich Plus                400. 10,000+ 
+##  6 I Am Rich Premium            I Am Rich Premium             400. 50,000+ 
+##  7 I am extremely Rich          I am extremely Rich           380. 1,000+  
+##  8 I am Rich!                   I am Rich!                    400. 1,000+  
+##  9 I am rich(premium)           I am rich(premium)            400. 5,000+  
+## 10 I Am Rich Pro                I Am Rich Pro                 400. 5,000+  
+## 11 I am rich (Most expensive a~ I am rich                     400. 1,000+  
+## 12 I Am Rich                    I Am Rich                     390. 10,000+ 
+## 13 I am Rich                    I am Rich                     400. 5,000+  
+## 14 I AM RICH PRO PLUS           I AM RICH PRO PLUS            400. 1,000+  
+## 15 Eu Sou Rico                  Eu Sou Rico                   395. 0+      
+## 16 &quot;I'm Rich/Eu sou Rico/ŘŁŮ†Ř~ &quot;I'm Rich/Eu sou Rico/ŘŁŮ†~   400. 0+</code></pre>
 </div>
 </div>
 <div id="apps-that-made-most-money" class="section level3">
@@ -613,6 +799,20 @@ data %&gt;% select(App, App2, ePrice, eInstalls) %&gt;% filter(ePrice&gt;300)</c
 </div>
 <div id="result-14" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 10,839 x 4
+##    App                          App2                      Sales SalesOut   
+##    &lt;chr&gt;                        &lt;chr&gt;                     &lt;dbl&gt; &lt;chr&gt;      
+##  1 Minecraft                    Minecraft              69900000 69,900,000~
+##  2 Minecraft                    Minecraft              69900000 69,900,000~
+##  3 I am rich                    I am rich              39999000 39,999,000~
+##  4 I Am Rich Premium            I Am Rich Premium      19999500 19,999,500~
+##  5 Hitman Sniper                Hitman Sniper           9900000 9,900,000.0
+##  6 Grand Theft Auto: San Andre~ Grand Theft Auto        6990000 6,990,000.0
+##  7 Facetune - For Free          Facetune                5990000 5,990,000.0
+##  8 Facetune - For Free          Facetune                5990000 5,990,000.0
+##  9 Facetune - For Free          Facetune                5990000 5,990,000.0
+## 10 Sleep as Android Unlock      Sleep as Android Unlo~  5990000 5,990,000.0
+## # ... with 10,829 more rows</code></pre>
 </div>
 </div>
 <div id="which-category-made-the-most-money" class="section level3">
@@ -624,6 +824,21 @@ data %&gt;% select(App, App2, ePrice, eInstalls) %&gt;% filter(ePrice&gt;300)</c
 </div>
 <div id="result-15" class="section level5">
 <h5>Result:</h5>
+<pre><code>## Warning: Grouping rowwise data frame strips rowwise nature</code></pre>
+<pre><code>## # A tibble: 33 x 3
+##    Category               sum count
+##    &lt;chr&gt;                &lt;dbl&gt; &lt;int&gt;
+##  1 FAMILY          186052625.  1971
+##  2 LIFESTYLE        57583939.   382
+##  3 GAME             40987637.  1144
+##  4 FINANCE          25726679.   366
+##  5 PHOTOGRAPHY      20922768.   335
+##  6 MEDICAL          13574844.   463
+##  7 PERSONALIZATION  10276948.   392
+##  8 TOOLS             5464821.   843
+##  9 SPORTS            4706212.   384
+## 10 PRODUCTIVITY      4313375.   424
+## # ... with 23 more rows</code></pre>
 </div>
 </div>
 <div id="words-that-occur-most-time-in-app-names" class="section level3">
@@ -649,6 +864,51 @@ occurences(data$App) %&gt;% top_n(20)</code></pre>
 </div>
 <div id="result-16" class="section level5">
 <h5>Result:</h5>
+<pre><code>## Selecting by Freq</code></pre>
+<pre><code>##          Word Freq
+## 1         for  396
+## 2           &amp;  383
+## 3        Free  218
+## 4         App  186
+## 5      Mobile  184
+## 6         Pro  152
+## 7         and  137
+## 8          My  123
+## 9         The  122
+## 10       2018  118
+## 11         by  113
+## 12         of  113
+## 13          2   99
+## 14      Photo   95
+## 15     Camera   93
+## 16         3D   91
+## 17      Video   88
+## 18 Calculator   87
+## 19     Google   85
+## 20       Live   84
+## 21    Manager   84</code></pre>
+<pre><code>## Selecting by Freq</code></pre>
+<pre><code>##      Word Freq
+## 1       - 1627
+## 2       &amp;  928
+## 3     for  485
+## 4    Free  380
+## 5     and  269
+## 6     App  260
+## 7  Mobile  196
+## 8    Live  165
+## 9     The  160
+## 10  Video  159
+## 11    Pro  156
+## 12     of  148
+## 13  Photo  144
+## 14    â\200“  142
+## 15     by  141
+## 16   News  136
+## 17   2018  133
+## 18     My  130
+## 19 Camera  120
+## 20 Dating  117</code></pre>
 </div>
 </div>
 <div id="most-frequest-words-in-positive-neutral-and-negative-reviews" class="section level3">
@@ -672,6 +932,165 @@ posFreq = occurences(pos$Translated_Review)
 posFreq %&gt;% top_n(50)</code></pre>
 <div id="result-17" class="section level5">
 <h5>Result:</h5>
+<pre><code>## [1] &quot;Top 50 most used words in negative reviews:&quot;</code></pre>
+<pre><code>## Selecting by Freq</code></pre>
+<pre><code>##      Word Freq
+## 1       I 8582
+## 2    game 3064
+## 3     get 1440
+## 4     The 1296
+## 5    like 1141
+## 6    This 1094
+## 7      It 1052
+## 8    time 1015
+## 9    even  872
+## 10   play  750
+## 11  can't  735
+## 12    I'm  685
+## 13   It's  615
+## 14  would  609
+## 15 really  581
+## 16  game.  561
+## 17    it.  536
+## 18  every  521
+## 19   make  504
+## 20   want  499
+## 21    ads  495
+## 22   back  494
+## 23   app.  492
+## 24    bad  469
+## 25    fix  468
+## 26  still  460
+## 27  phone  457
+## 28 update  448
+## 29    new  446
+## 30   I've  435
+## 31  level  423
+## 32    Not  416
+## 33  money  410
+## 34    the  402
+## 35   give  395
+## 36      5  394
+## 37     If  390
+## 38    see  386
+## 39   need  384
+## 40     go  377
+## 41   much  377
+## 42    way  374
+## 43  never  357
+## 44   Very  356
+## 45 Please  346
+## 46    You  341
+## 47    And  335
+## 48   hate  333
+## 49   work  327
+## 50    But  322</code></pre>
+<pre><code>## [1] &quot;Top 50 most used words in neutral reviews:&quot;</code></pre>
+<pre><code>## Selecting by Freq</code></pre>
+<pre><code>##       Word Freq
+## 1        I 2268
+## 2       It  414
+## 3     like  351
+## 4      The  306
+## 5      get  252
+## 6    can't  251
+## 7     work  249
+## 8      the  243
+## 9     This  221
+## 10    even  202
+## 11    time  188
+## 12   phone  172
+## 13    app.  161
+## 14    want  151
+## 15    need  148
+## 16     fix  142
+## 17  Please  141
+## 18     it.  137
+## 19  update  136
+## 20      No  128
+## 21     see  128
+## 22     not  126
+## 23      to  125
+## 24   still  124
+## 25    back  121
+## 26     let  121
+## 27 account  120
+## 28     I'm  115
+## 29   every  114
+## 30    It's  114
+## 31   would  114
+## 32    know  111
+## 33  please  111
+## 34     try  111
+## 35    open  108
+## 36      My  104
+## 37 working  103
+## 38     add   99
+## 39    give   97
+## 40   keeps   97
+## 41 problem   97
+## 42  option   94
+## 43     You   94
+## 44     Not   93
+## 45     log   89
+## 46    play   89
+## 47    make   88
+## 48       5   86
+## 49   never   86
+## 50   using   86</code></pre>
+<pre><code>## [1] &quot;Top 50 most used words in positive reviews:&quot;</code></pre>
+<pre><code>## Selecting by Freq</code></pre>
+<pre><code>##      Word  Freq
+## 1       I 22489
+## 2    like  3529
+## 3    game  3485
+## 4     The  3119
+## 5    good  3090
+## 6    love  2962
+## 7      It  2868
+## 8     get  2835
+## 9    This  2626
+## 10  great  2312
+## 11  would  2274
+## 12   time  2043
+## 13 really  2024
+## 14   app.  1980
+## 15   It's  1951
+## 16    I'm  1623
+## 17   much  1549
+## 18   many  1533
+## 19  Great  1529
+## 20    it.  1509
+## 21   easy  1470
+## 22   even  1442
+## 23   make  1333
+## 24    new  1326
+## 25   I've  1278
+## 26   best  1265
+## 27    way  1217
+## 28  can't  1212
+## 29   want  1200
+## 30   need  1172
+## 31 better  1141
+## 32   Very  1130
+## 33    But  1100
+## 34   play  1087
+## 35    see  1084
+## 36   Good  1075
+## 37  could  1072
+## 38  using  1066
+## 39   also  1058
+## 40   able  1052
+## 41   free  1048
+## 42   Love  1047
+## 43  phone  1009
+## 44  still   970
+## 45 update   951
+## 46    ads   950
+## 47  every   942
+## 48   work   941
+## 49   back   932
+## 50   nice   927</code></pre>
 </div>
 </div>
 <div id="review-length-based-on-sentiment" class="section level3">
@@ -682,6 +1101,12 @@ posFreq %&gt;% top_n(50)</code></pre>
 </div>
 <div id="result-18" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 3 x 2
+##   Sentiment `mean(Length)`
+##   &lt;chr&gt;              &lt;dbl&gt;
+## 1 Negative           137. 
+## 2 Neutral             51.9
+## 3 Positive           118.</code></pre>
 </div>
 </div>
 <div id="joining-data" class="section level2">
@@ -703,6 +1128,21 @@ joined = joined %&gt;% filter(!is.na(Sentiment))</code></pre>
 </div>
 <div id="result-19" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 36 x 3
+## # Groups:   eInstalls [12]
+##     eInstalls Sentiment   sum
+##         &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt;
+##  1 1000000000 Negative    590
+##  2 1000000000 Neutral     149
+##  3 1000000000 Positive   1493
+##  4  500000000 Negative   1040
+##  5  500000000 Neutral     173
+##  6  500000000 Positive   1060
+##  7  100000000 Negative   5157
+##  8  100000000 Neutral    1140
+##  9  100000000 Positive  10197
+## 10   50000000 Negative   1918
+## # ... with 26 more rows</code></pre>
 </div>
 </div>
 <div id="reviews-by-category" class="section level3">
@@ -714,20 +1154,31 @@ joined = joined %&gt;% filter(!is.na(Sentiment))</code></pre>
 </div>
 <div id="result-20" class="section level5">
 <h5>Result:</h5>
+<pre><code>## # A tibble: 99 x 3
+## # Groups:   Category [33]
+##    Category           Sentiment count
+##    &lt;chr&gt;              &lt;chr&gt;     &lt;int&gt;
+##  1 GAME               Positive  11041
+##  2 GAME               Negative   7270
+##  3 FAMILY             Positive   3888
+##  4 HEALTH_AND_FITNESS Positive   3444
+##  5 SPORTS             Positive   2201
+##  6 PRODUCTIVITY       Positive   2144
+##  7 DATING             Positive   1971
+##  8 TRAVEL_AND_LOCAL   Positive   1824
+##  9 PHOTOGRAPHY        Positive   1709
+## 10 FAMILY             Negative   1559
+## # ... with 89 more rows</code></pre>
 </div>
 </div>
 <div id="getting-apps-by-name" class="section level3">
 <h3>Getting apps by name</h3>
 <p>Function that gets a dataframe and returns apps that contain a word in their name ##### Implementation:</p>
 <pre class="r"><code>getAppsByName &lt;- function(d, n) {
-  print(paste(&quot;Searching for apps that contain:&quot;, n, sep=&quot; &quot;))
   return(d %&gt;% filter(grepl(n, d$App)))
 }
 
 getAppsByName(data, &quot;Google&quot;)</code></pre>
-<div id="result-21" class="section level5">
-<h5>Result:</h5>
-</div>
 </div>
 <div id="get-apps-that-are-in-range-of-rating" class="section level3">
 <h3>Get apps that are in range of Rating</h3>
@@ -740,9 +1191,6 @@ getAppsByName(data, &quot;Google&quot;)</code></pre>
 }
 
 getAppsByRating(data, 4.4, 4.5)</code></pre>
-</div>
-<div id="result-22" class="section level5">
-<h5>Result:</h5>
 </div>
 </div>
 <div id="most-frequemnt-words-in-app-names-based-on-installs" class="section level3">
@@ -771,8 +1219,9 @@ occurences &lt;- function(d) {
 
 data %&gt;% select(App2, eInstalls) %&gt;% group_by(eInstalls) %&gt;% summarise(&quot;TopWords&quot;=selectTopNWords(occurences(App2), 3))</code></pre>
 </div>
-<div id="result-23" class="section level5">
+<div id="result-21" class="section level5">
 <h5>Result:</h5>
+<pre><code>## Warning: Grouping rowwise data frame strips rowwise nature</code></pre>
 <pre><code>## # A tibble: 20 x 2
 ##     eInstalls TopWords                                                     
 ##         &lt;dbl&gt; &lt;chr&gt;                                                        

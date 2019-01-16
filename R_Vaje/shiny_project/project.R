@@ -201,7 +201,7 @@ data = data %>% mutate("Sales"=(ePrice * eInstalls))
 
 # IDEA
 # get n app names that have the most installs
-n = 5
+n = 10
 get_top_n <- function(d, n) {
   str = ""
   i = 0
@@ -213,7 +213,7 @@ get_top_n <- function(d, n) {
   return(str)
 }
 
-data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise(get_top_n(App2, n)) %>% arrange(desc(eInstalls))
+r = data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise(get_top_n(App2, n)) %>% arrange(desc(eInstalls))
 
 
 
