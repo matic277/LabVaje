@@ -43,12 +43,51 @@ ProcessedReviewsPath = paste(sourceDir, "processedReviews.csv", sep="")
 # rdata = rio::import(file=RawDataPath, format="csv")
 # processed data apps
 data = rio::import(file=ProcessedDataPath, format="csv")
-
+data
 # raw reviews
 #rrvs = rio::import(file=RawReviewsPath, format="csv")
 # processed reviews
 rvs = rio::import(file=ProcessedReviewsPath, format="csv")
 
+nrow(data)
+
+colnames(data)
+
+r = data %>% group_by(App) %>% 
+  summarise(
+    "Category"=max(Category),
+    "Rating"=max(Rating),
+    "Reviews"=max(Reviews),
+    "Size"=max(Size),
+    "Type"=max(Type),
+    "Price"=max(Price),
+    "Content Rating"=max(`Content Rating`),
+    "Genres"=max(Genres),
+    "Last Updated"=max(`Last Updated`),
+    "Current Ver"=max(`Current Ver`),
+    "Android Ver"=max(`Android Ver`),
+    "ePrice"=max(ePrice),
+    "eSize"=max(eSize),
+    "Installs"=max(Installs),
+    "eInstalls"=max(eInstalls),
+    "App2"=max(App2),
+    "NameRangeLen"=max(NameRangeLen),
+    "Sales"=max(Sales)
+  )
+nrow(r)
+
+
+rio::export(r, format="csv")
+
+r = import("r.csv", format="csv")
+tibble::as_tibble(r)
+tibble::as_tibble(data)
+
+nad = data[is.na(data$Rating), ]
+nar = data[is.na(r$Rating), ]
+
+tibble::as_tibble(nar)
+tibble::as_tibble(nad)
 
 covertPrice <- function(d) {
   ifelse (startsWith(d, "$"), as.numeric(substr(d, 2, nchar(d))), as.numeric(d))

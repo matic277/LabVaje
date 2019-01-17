@@ -211,6 +211,36 @@ tibble::as.tibble( sample_n(data %>% select(Size, eSize), 10))
 ```
 
 
+### Double data?
+Some of the apps appear more than once in the dataset, with identical columns.
+
+##### Implementation:
+```{r eval=FALSE}
+data = data %>% group_by(App) %>% 
+  summarise(
+    "Category"=max(Category),
+    "Rating"=max(Rating),
+    "Reviews"=max(Reviews),
+    "Size"=max(Size),
+    "Type"=max(Type),
+    "Price"=max(Price),
+    "Content Rating"=max(`Content Rating`),
+    "Genres"=max(Genres),
+    "Last Updated"=max(`Last Updated`),
+    "Current Ver"=max(`Current Ver`),
+    "Android Ver"=max(`Android Ver`),
+    "ePrice"=max(ePrice),
+    "eSize"=max(eSize),
+    "eInstalls"=max(eInstalls),
+    "App2"=max(App2),
+    "NameRangeLen"=max(NameRangeLen),
+    "Sales"=max(Sales)
+  )
+```
+##### Result:  
+We go from about 1100 rows to 950 rows of apps.
+
+
 ## googleplaystore_user_reviews.csv file
 ### Removing rows with bad values
 Some rows have a lot of NA or NaN values in columns '*Sentiment*' and '*Translated_Review*', we need to remove those.  
@@ -398,12 +428,12 @@ data %>% select(`Content Rating`, eInstalls) %>% group_by(`Content Rating`) %>% 
 ##### Implementation:
 ```{r eval=FALSE}
 data %>% select(Price) %>% group_by(Price) %>% summarise("num"=n()) %>% arrange(desc(num))
-data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
+#data %>% select(App, App2, ePrice, eInstalls) %>% filter(ePrice>300)
 ```
 ##### Result:
 ```{r echo=FALSE, warning=FALSE}
 data %>% select(Price) %>% group_by(Price) %>% summarise("num"=n()) %>% arrange(desc(num))
-data %>% select(App, App2, ePrice, Installs) %>% filter(ePrice>300)
+#data %>% select(App, App2, ePrice, Installs) %>% filter(ePrice>300)
 ```
 
 
@@ -435,22 +465,18 @@ data %>% select(Category, Sales) %>% group_by(Category) %>% summarise("sum"=sum(
 
 
 ### Words that occur most time in app names
-Function gets dataframe row.  
-We concatinate all the values of that row into one string, which is then passed into table() function which grabs all unique values and counts them.  
+Function gets dataframe column that contains app names.  
+We concatinate all the values of all rows into one string, which is then passed into table() function which grabs all unique values(in this case string) and counts how many each occures. 
 Returns that table as a datafarame, picking top 20 most frequent words
 
 ##### Implementation:
 ```{r eval=FALSE}
 occurences <- function(d) {
-  allWords = c("")
-  for (e in d) {
-    split = str_split(e, " ")[[1]]
-    allWords = combine(allWords, split)
-  }
-  # get a pair of word - num_of_occurrences and put it in a dataframe
+  combined = paste(d, collapse=" ")
+  allWords = str_split(combined, " ")[[1]]
   df = as.data.frame(table(allWords))
   colnames(df) = c("Word", "Freq")
-  return(df %>% arrange(desc(Freq)))
+  return(df)
 }
 occurences(data$App2) %>% top_n(20)
 occurences(data$App) %>% top_n(20)
@@ -458,15 +484,11 @@ occurences(data$App) %>% top_n(20)
 ##### Result:
 ```{r echo=FALSE}
 occurences <- function(d) {
-  allWords = c("")
-  for (e in d) {
-    split = str_split(e, " ")[[1]]
-    allWords = combine(allWords, split)
-  }
-  # get a pair of word - num_of_occurrences and put it in a dataframe
+  combined = paste(d, collapse=" ")
+  allWords = str_split(combined, " ")[[1]]
   df = as.data.frame(table(allWords))
   colnames(df) = c("Word", "Freq")
-  return(df %>% arrange(desc(Freq)))
+  return(df)
 }
 occurences(data$App2) %>% top_n(20)
 occurences(data$App) %>% top_n(20)
@@ -474,7 +496,7 @@ occurences(data$App) %>% top_n(20)
 
 
 ### Most frequest words in positive, neutral and negative reviews
-First we subset all negative, neutral and positive rows into their own dataframes, then use use function occurences on each dataframe.
+First we subset all negative, neutral and positive rows into their own dataframes, then use use function occurences on each dataframe.  
 ##### Implementation:
 ```{r eval=FALSE}
 neg = rvs %>% filter(Sentiment=="Negative") %>% select(Sentiment, Translated_Review, App)
@@ -485,14 +507,14 @@ occurences <- function(d) {
   # same function as before
 }
 
-negFreq = occurences(neg$Translated_Review)
-negFreq %>% top_n(50)
+posFreq = occurences(pos$Translated_Review)
+posFreq %>% arrange(desc(Freq)) %>% top_n(50)
 
 neuFreq = occurences(neu$Translated_Review)
-neuFreq %>% top_n(50)
+neuFreq %>% arrange(desc(Freq)) %>% top_n(50)
 
-posFreq = occurences(pos$Translated_Review)
-posFreq %>% top_n(50)
+negFreq = occurences(neg$Translated_Review)
+negFreq %>% arrange(desc(Freq)) %>% top_n(50)
 ```
 ##### Result:
 ```{r echo=FALSE}
@@ -502,26 +524,24 @@ neu = rvs %>% filter(Sentiment=="Neutral") %>% select(Sentiment, Translated_Revi
 pos = rvs %>% filter(Sentiment=="Positive") %>% select(Sentiment, Translated_Review, App)
 
 occurences <- function(d) {
-  allWords = c("")
-  for (e in d) {
-    split = str_split(e, " ")[[1]]
-    allWords = combine(allWords, split)
-  }
-  # get a pair of word - num_of_occurrences and put it in a dataframe
+  combined = paste(d, collapse=" ")
+  allWords = str_split(combined, " ")[[1]]
   df = as.data.frame(table(allWords))
   colnames(df) = c("Word", "Freq")
-  return(df %>% arrange(desc(Freq)))
+  return(df)
 }
 
 negFreq = occurences(neg$Translated_Review)
 print("Top 50 most used words in negative reviews:")
-negFreq %>% top_n(50)
+negFreq %>% arrange(desc(Freq)) %>% top_n(50)
+
 neuFreq = occurences(neu$Translated_Review)
 print("Top 50 most used words in neutral reviews:")
-neuFreq %>% top_n(50)
-print("Top 50 most used words in positive reviews:")
+neuFreq %>% arrange(desc(Freq)) %>% top_n(50)
+
 posFreq = occurences(pos$Translated_Review)
-posFreq %>% top_n(50)
+print("Top 50 most used words in positive reviews:")
+posFreq %>% arrange(desc(Freq)) %>% top_n(50)
 ```
 
 
@@ -582,13 +602,13 @@ getAppsByName(data, "Google")
 ```
 
 ```{r echo=FALSE}
-# getAppsByName <- function(d, n) {
-#   #print(paste("Searching for apps that contain:", n, sep=" "))
-#   df = d %>% filter(grepl(n, d$App))
-#   return(df)
-# }
-# df = getAppsByName(data, "Google")
-# tibble::as.tibble(df)
+getAppsByName <- function(d, n) {
+  #print(paste("Searching for apps that contain:", n, sep=" "))
+  df = d %>% filter(grepl(n, App))
+  return(df)
+}
+df = getAppsByName(data, "Google")
+tibble::as.tibble(df)
 ```
 
 ### Get apps that are in range of Rating
@@ -597,78 +617,70 @@ Function gets datarame and two values, returns all instances of apps which Ratin
 ##### Implementation:
 ```{r eval=FALSE}
 getAppsByRating <- function(d, n1, n2) {
-  print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
-  return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
+  #print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
+  return(d %>% filter(Rating>=n1 & Rating<=n2))
 }
 
 getAppsByRating(data, 4.4, 4.5)
 ```
 
 ```{r echo=FALSE}
-# getAppsByRating <- function(d, n1, n2) {
-#   print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
-#   return(d %>% filter(d$Rating>=n1 & d$Rating<=n2))
-# }
-# df = getAppsByRating(data, 4.4, 4.5)
-# tibble::as.tibble(df)
+getAppsByRating <- function(d, n1, n2) {
+  print(paste("Searching for apps in range: [", n1, " ", n2, "]", sep=""))
+  return(d %>% filter(Rating>=n1 & Rating<=n2))
+}
+df = getAppsByRating(data, 4.4, 4.5)
+tibble::as.tibble(df)
 ```
 
 ### Most frequemnt words in app names based on installs
-Implementing another function selectTopNWords, that takes a dataframe and a number.  
+Implementing another function topnWords, that takes a dataframe and a number.  
 Selects top n most frequent words in dataframe and concatinates them together.  
 Returns a single string.  
 
-The output of function occurenes is the input to function selectTopNWords.
+The output of function occurences is the input to function selectTopNWords.
 
 ##### Implementation:
 ```{r eval=FALSE}
-selectTopNWords <- function(d, n) {
-  output = ""
-  words = d %>% top_n(n) %>% select(Word)
-  i = 0
-  for (w in words) {
-    output = paste(output, w, collapse=" ")
-    i = i + 1
-    if (i==n) break
-  }
-  return(output)
+topnWords <- function(d, n) {
+  freqWords = (
+    d %>% select(Word, Freq) %>% 
+    arrange(desc(Freq)) %>% 
+    top_n(n)
+  )$Word
+  return(paste(freqWords, collapse=" "))
 }
 
 occurences <- function(d) {
   # same as before
 }
 
-data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% summarise("TopWords"=selectTopNWords(occurences(App2), 3))
+data %>% select(App2, eInstalls) %>% 
+  group_by(eInstalls) %>% 
+  summarise("TopWords"=topnWords(occurences(App2), 5))
 
 ```
 ##### Result:
 ```{r echo=FALSE, message=FALSE}
-selectTopNWords <- function(d, n) {
-  output = ""
-  words = d %>% top_n(n) %>% select(Word)
-  i = 0
-  for (w in words) {
-    output = paste(output, w, collapse=" ")
-    i = i + 1
-    if (i==n) break
-  }
-  return(output)
+topnWords <- function(d, n) {
+  freqWords = (
+    d %>% select(Word, Freq) %>% 
+    arrange(desc(Freq)) %>% 
+    top_n(n)
+  )$Word
+  return(paste(freqWords, collapse=" "))
 }
 
 occurences <- function(d) {
-  allWords = c("")
-  for (e in d) {
-    split = str_split(e, " ")[[1]]
-    allWords = combine(allWords, split)
-  }
-  # get a pair of word - num_of_occurrences and put it in a dataframe
+  combined = paste(d, collapse=" ")
+  allWords = str_split(combined, " ")[[1]]
   df = as.data.frame(table(allWords))
   colnames(df) = c("Word", "Freq")
-  return(df %>% arrange(desc(Freq)))
+  return(df)
 }
-
-data %>% select(App2, eInstalls) %>% group_by(eInstalls) %>% 
-  summarise("TopWords"=selectTopNWords(occurences(App2), 3))
+data %>% select(App2, eInstalls) %>% 
+  group_by(eInstalls) %>% 
+  summarise("TopWords"=topnWords(occurences(App2), 5))
 ```
 
 
